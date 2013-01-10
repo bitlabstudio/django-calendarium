@@ -1,0 +1,18 @@
+# Install these requirements if you wish to contribute to this project.
+
+# ===========================================================================
+# Packages essential to this app. Needed by anyone who wants to use this app.
+# ===========================================================================
+django==1.4.3
+South==0.7.6
+python-dateutil==2.1
+
+
+# ==============================================================
+# Packages needed for running the tests. Needed by contributors.
+# ==============================================================
+Fabric
+mock
+django-nose
+coverage
+django-coverage

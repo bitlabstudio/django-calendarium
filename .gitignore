@@ -1,0 +1,8 @@
+*.egg-info/
+*.pyc
+.ropeproject
+.tox
+chromedriver.log
+coverage/
+db.sqlite
+dist/

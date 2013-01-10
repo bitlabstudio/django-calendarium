@@ -1,0 +1,9 @@
+include AUTHORS
+include LICENSE
+include DESCRIPTION
+include CHANGELOG.txt
+include README.md
+graft calendarium
+global-exclude *.orig *.pyc *.log
+prune calendarium/tests/coverage/
+prune calendarium/.ropeproject/
