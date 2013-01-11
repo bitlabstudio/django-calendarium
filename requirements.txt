@@ -11,6 +11,8 @@ python-dateutil==2.1
 # ==============================================================
 # Packages needed for running the tests. Needed by contributors.
 # ==============================================================
+factory-boy
+django-libs
 Fabric
 mock
 django-nose
