@@ -98,10 +98,10 @@ class EventRelation(models.Model):
     This class allows to relat additional or external data to an event.
 
     :event: A FK to the ``Event`` this additional data is related to.
-    content_type: A FK to ContentType of the generic object.
-    object_id: The id of the generic object.
-    content_object: The generic foreign key to the generic object.
-    relation_type: A string representing the type of the relation.
+    :content_type: A FK to ContentType of the generic object.
+    :object_id: The id of the generic object.
+    :content_object: The generic foreign key to the generic object.
+    :relation_type: A string representing the type of the relation.
 
     """
 
