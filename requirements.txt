@@ -18,3 +18,4 @@ mock
 django-nose
 coverage
 django-coverage
+ipdb
