@@ -22,8 +22,10 @@ class EventCategoryFactory(factory.Factory):
     color = factory.Sequence(lambda n: 'col{0}'.format(n))
 
 
-class EventFactoryMixin(object):
+class EventFactoryMixin(factory.Factory):
     """Mixin for the event models."""
+    FACTORY_FOR = None
+
     start = timezone.now()
     end = timezone.now()
     title = factory.Sequence(lambda n: 'title{0}'.format(n))
@@ -42,13 +44,39 @@ class RuleFactory(factory.Factory):
     params = 'JSON STRING'
 
 
-class EventFactory(EventFactoryMixin, factory.Factory):
+class EventFactory(EventFactoryMixin):
     """Factory for the ``Event`` model."""
     FACTORY_FOR = Event
 
     category = factory.SubFactory(EventCategoryFactory)
     rule = factory.SubFactory(RuleFactory)
     end_recurring_period = timezone.now()
+
+    @factory.post_generation(extract_prefix='set')
+    def time_offset(self, create, extracted, **kwargs):
+        """
+        On initialization of the Factory one can pass following argument:
+
+            'set__fieldname=value'
+
+        where fieldname is the name of the field to set (e.g. start) and value
+        is the time offset in days to set.
+
+        To set start 4 days into the past you would pass the following:
+
+            'set__start=-4'
+
+        """
+        self.creation_date = timezone.now() - timezone.timedelta(
+            days=kwargs.get('creation_date') or 0)
+        self.start = timezone.now() - timezone.timedelta(
+            days=kwargs.get('start') or 0)
+        self.end = timezone.now() - timezone.timedelta(
+            days=kwargs.get('end') or 0)
+        self.end_recurring_period = timezone.now() - timezone.timedelta(
+            days=kwargs.get('end_recurring_period') or 0)
+        if create:
+            self.save()
 
 
 class EventRelation(factory.Factory):
@@ -60,10 +88,38 @@ class EventRelation(factory.Factory):
     relation_type = factory.Sequence(lambda n: 'relation_type{0}'.format(n))
 
 
-class OccurrenceFactory(EventFactoryMixin, factory.Factory):
+class OccurrenceFactory(EventFactoryMixin):
     """Factory for the ``Occurrence`` model."""
     FACTORY_FOR = Occurrence
 
     event = factory.SubFactory(EventFactory)
     original_start = timezone.now()
     original_end = timezone.now()
+
+    @factory.post_generation(extract_prefix='set')
+    def time_offset(self, create, extracted, **kwargs):
+        """
+        On initialization of the Factory one can pass following argument:
+
+            'set__fieldname=value'
+
+        where fieldname is the name of the field to set (e.g. start) and value
+        is the time offset in days to set.
+
+        To set start 4 days into the past you would pass the following:
+
+            'set__start=-4'
+
+        """
+        self.creation_date = timezone.now() - timezone.timedelta(
+            days=kwargs.get('creation_date') or 0)
+        self.start = timezone.now() - timezone.timedelta(
+            days=kwargs.get('start') or 0)
+        self.end = timezone.now() - timezone.timedelta(
+            days=kwargs.get('end') or 0)
+        self.original_start = timezone.now() - timezone.timedelta(
+            days=kwargs.get('original_start') or 0)
+        self.original_end = timezone.now() - timezone.timedelta(
+            days=kwargs.get('original_end') or 0)
+        if create:
+            self.save()
