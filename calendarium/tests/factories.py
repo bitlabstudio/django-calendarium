@@ -2,7 +2,7 @@
 import factory
 
 from django_libs.tests.factories import UserFactory
-from django.utils.timezone import now, timedelta
+from django.utils.timezone import timedelta
 
 from calendarium.models import (
     Event,
@@ -12,6 +12,7 @@ from calendarium.models import (
     Rule,
 )
 from calendarium.tests.test_app.models import DummyModelFactory
+from calendarium.utils import now
 
 
 class EventCategoryFactory(factory.Factory):
