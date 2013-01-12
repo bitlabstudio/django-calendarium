@@ -2,7 +2,7 @@
 import factory
 
 from django_libs.tests.factories import UserFactory
-from django.utils import timezone
+from django.utils.timezone import now, timedelta
 
 from calendarium.models import (
     Event,
@@ -26,12 +26,12 @@ class EventFactoryMixin(factory.Factory):
     """Mixin for the event models."""
     FACTORY_FOR = None
 
-    start = timezone.now()
-    end = timezone.now()
+    start = now()
+    end = now()
     title = factory.Sequence(lambda n: 'title{0}'.format(n))
     description = factory.Sequence(lambda n: 'description{0}'.format(n))
     created_by = factory.SubFactory(UserFactory)
-    creation_date = timezone.now()
+    creation_date = now()
 
 
 class RuleFactory(factory.Factory):
@@ -40,8 +40,9 @@ class RuleFactory(factory.Factory):
 
     name = factory.Sequence(lambda n: 'rule{0}'.format(n))
     description = factory.Sequence(lambda n: 'description{0}'.format(n))
-    frequency = factory.Sequence(lambda n: 'frequency{0}'.format(n))
-    params = 'JSON STRING'
+    # standard is set to DAILY and one week long
+    frequency = 'DAILY'
+    params = '{"count": 7}'
 
 
 class EventFactory(EventFactoryMixin):
@@ -50,7 +51,7 @@ class EventFactory(EventFactoryMixin):
 
     category = factory.SubFactory(EventCategoryFactory)
     rule = factory.SubFactory(RuleFactory)
-    end_recurring_period = timezone.now()
+    end_recurring_period = now()
 
     @factory.post_generation(extract_prefix='set')
     def time_offset(self, create, extracted, **kwargs):
@@ -67,14 +68,16 @@ class EventFactory(EventFactoryMixin):
             'set__start=-4'
 
         """
-        self.creation_date = timezone.now() - timezone.timedelta(
+        self.creation_date = now() - timedelta(
             days=kwargs.get('creation_date') or 0)
-        self.start = timezone.now() - timezone.timedelta(
+        self.start = now() + timedelta(
             days=kwargs.get('start') or 0)
-        self.end = timezone.now() - timezone.timedelta(
+        self.end = now() + timedelta(
             days=kwargs.get('end') or 0)
-        self.end_recurring_period = timezone.now() - timezone.timedelta(
-            days=kwargs.get('end_recurring_period') or 0)
+        # note that this defaults to seven, because the default rule is daily
+        # for one week, so 7 days
+        self.end_recurring_period = now() + timedelta(
+            days=kwargs.get('end_recurring_period') or 7)
         if create:
             self.save()
 
@@ -93,8 +96,8 @@ class OccurrenceFactory(EventFactoryMixin):
     FACTORY_FOR = Occurrence
 
     event = factory.SubFactory(EventFactory)
-    original_start = timezone.now()
-    original_end = timezone.now()
+    original_start = now()
+    original_end = now()
 
     @factory.post_generation(extract_prefix='set')
     def time_offset(self, create, extracted, **kwargs):
@@ -111,15 +114,15 @@ class OccurrenceFactory(EventFactoryMixin):
             'set__start=-4'
 
         """
-        self.creation_date = timezone.now() - timezone.timedelta(
+        self.creation_date = now() + timedelta(
             days=kwargs.get('creation_date') or 0)
-        self.start = timezone.now() - timezone.timedelta(
+        self.start = now() + timedelta(
             days=kwargs.get('start') or 0)
-        self.end = timezone.now() - timezone.timedelta(
+        self.end = now() + timedelta(
             days=kwargs.get('end') or 0)
-        self.original_start = timezone.now() - timezone.timedelta(
+        self.original_start = now() + timedelta(
             days=kwargs.get('original_start') or 0)
-        self.original_end = timezone.now() - timezone.timedelta(
+        self.original_end = now() + timedelta(
             days=kwargs.get('original_end') or 0)
         if create:
             self.save()
