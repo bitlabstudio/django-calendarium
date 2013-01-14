@@ -42,8 +42,11 @@ class EventModelManager(models.Manager):
 
 class EventModelMixin(models.Model):
     """
-    Base event mixin class to prevent recurrence in the ``Event`` and
-    ``Occurrence`` model class.
+    Abstract base class to prevent code duplication.
+    :start: The start date of the event.
+    :end: The end date of the event.
+    :creation_date: When this event was created.
+    :description: The description of the event.
 
     """
     start = models.DateTimeField(
@@ -54,19 +57,15 @@ class EventModelMixin(models.Model):
         verbose_name=_('End date'),
     )
 
-    title = models.CharField(
-        max_length=256,
-        verbose_name=_('Title'),
+    creation_date = models.DateTimeField(
+        verbose_name=_('Creation date'),
+        auto_now_add=True,
     )
 
     description = models.TextField(
         max_length=2048,
         verbose_name=_('Description'),
-    )
-
-    creation_date = models.DateTimeField(
-        verbose_name=_('Creation date'),
-        auto_now_add=True,
+        blank=True,
     )
 
     class Meta:
@@ -77,17 +76,11 @@ class Event(EventModelMixin):
     """
     Hold the information about an event in the calendar.
 
-    inherited from ``EventModelMixin``:
-        :start: The start date of the event.
-        :end: The end date of the event.
-        :title: The title of the event.
-        :description: The description of the event.
-        :creation_date: When this event was created.
-    own:
-        :created_by: FK to the ``User``, who created this event.
-        :category: FK to the ``EventCategory`` this event belongs to.
-        :rule: FK to the definition of the recurrence of an event.
-        :end_recurring_period: The possible end of the recurring definition.
+    :created_by: FK to the ``User``, who created this event.
+    :category: FK to the ``EventCategory`` this event belongs to.
+    :rule: FK to the definition of the recurrence of an event.
+    :end_recurring_period: The possible end of the recurring definition.
+    :title: The title of the event.
 
     """
 
@@ -111,6 +104,11 @@ class Event(EventModelMixin):
 
     end_recurring_period = models.DateTimeField(
         verbose_name=_('End of recurring'),
+    )
+
+    title = models.CharField(
+        max_length=256,
+        verbose_name=_('Title'),
     )
 
     def _create_occurrence(self, occ_start, occ_end=None):
@@ -199,13 +197,16 @@ class EventCategory(models.Model):
 
 class EventRelation(models.Model):
     """
-    This class allows to relat additional or external data to an event.
+    This class allows to relate additional or external data to an event.
 
     :event: A FK to the ``Event`` this additional data is related to.
     :content_type: A FK to ContentType of the generic object.
     :object_id: The id of the generic object.
     :content_object: The generic foreign key to the generic object.
-    :relation_type: A string representing the type of the relation.
+    :relation_type: A string representing the type of the relation. This allows
+        to relate to the same content_type several times but mean different
+        things, such as (normal_guests, speakers, keynote_speakers, all being
+        Guest instances)
 
     """
 
@@ -234,19 +235,14 @@ class EventRelation(models.Model):
 
 class Occurrence(EventModelMixin):
     """
-    Needed for re-scheduling an occurrence of an ``Event``.
+    Needed if one occurrence of an event has slightly different settings than
+    all other.
 
-    inherited from ``EventModelMixin``:
-        :start: The start date of the event.
-        :end: The end date of the event.
-        :title: The title of the event.
-        :description: The description of the event.
-        :creation_date: When this event was created.
-    own:
-        :created_by: FK to the ``User``, who created this event.
-        :event: FK to the ``Event`` this ``Occurrence`` belongs to.
-        :original_start: The original start of the related ``Event``.
-        :original_end: The original end of the related ``Event``.
+    :created_by: FK to the ``User``, who created this event.
+    :event: FK to the ``Event`` this ``Occurrence`` belongs to.
+    :original_start: The original start of the related ``Event``.
+    :original_end: The original end of the related ``Event``.
+    :title: The title of the event.
 
     """
     created_by = models.ForeignKey(
@@ -273,6 +269,12 @@ class Occurrence(EventModelMixin):
         verbose_name=_('Cancelled'),
     )
 
+    title = models.CharField(
+        max_length=256,
+        verbose_name=_('Title'),
+        blank=True,
+    )
+
 
 class Rule(models.Model):
     """
@@ -281,8 +283,8 @@ class Rule(models.Model):
     :name: Name of this rule.
     :description: Description of this rule.
     :frequency: A string representing the frequency of the recurrence.
-    :params: JSON string to hold the exact rule parameters to define the
-        pattern of the recurrence
+    :params: JSON string to hold the exact rule parameters as used by
+        dateutil.rrule to define the pattern of the recurrence.
 
     """
     name = models.CharField(
