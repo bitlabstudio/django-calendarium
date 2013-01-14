@@ -17,11 +17,11 @@ def now(**kwargs):
 
     I replaced the microseconds, because there is some slightly varying
     difference that occurs out of unknown reason. Since we probably never
-    schedule events on microsecond basis, microseconds will be zeroed
-    everywhere.
+    schedule events on microsecond basis, seconds and microseconds will be
+    zeroed everywhere.
 
     """
-    return timezone.now(**kwargs).replace(microsecond=0)
+    return timezone.now(**kwargs).replace(second=0, microsecond=0)
 
 
 class OccurrenceReplacer(object):
@@ -30,6 +30,7 @@ class OccurrenceReplacer(object):
     before passing it forward is to make sure all of the occurrences that
     have been stored in the datebase replace, in the list you are returning,
     the generated ones that are equivalent.  This class makes this easier.
+
     """
     def __init__(self, persisted_occurrences):
         lookup = [
