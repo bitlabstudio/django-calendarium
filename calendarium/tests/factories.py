@@ -28,7 +28,7 @@ class EventFactoryMixin(factory.Factory):
     FACTORY_FOR = None
 
     start = now()
-    end = now()
+    end = now() + timedelta(hours=1)
     title = factory.Sequence(lambda n: 'title{0}'.format(n))
     description = factory.Sequence(lambda n: 'description{0}'.format(n))
     created_by = factory.SubFactory(UserFactory)
@@ -47,7 +47,13 @@ class RuleFactory(factory.Factory):
 
 
 class EventFactory(EventFactoryMixin):
-    """Factory for the ``Event`` model."""
+    """
+    Factory for the ``Event`` model.
+
+    If you set rule=None on creation, you get an event that occurs only once.
+    Otherwise it defaults to an event with a DAILY rule over one week.
+
+    """
     FACTORY_FOR = Event
 
     category = factory.SubFactory(EventCategoryFactory)
@@ -62,23 +68,27 @@ class EventFactory(EventFactoryMixin):
             'set__fieldname=value'
 
         where fieldname is the name of the field to set (e.g. start) and value
-        is the time offset in days to set.
+        is the time offset in hours to set.
 
-        To set start 4 days into the past you would pass the following:
+        To set start 4 hours into the past you would pass the following:
 
             'set__start=-4'
 
         """
         self.creation_date = now() - timedelta(
-            days=kwargs.get('creation_date') or 0)
-        self.start = now() + timedelta(
-            days=kwargs.get('start') or 0)
-        self.end = now() + timedelta(
-            days=kwargs.get('end') or 0)
+            hours=kwargs.get('creation_date') or 0)
+        self.start = now() + timedelta(hours=kwargs.get('start') or 0)
+        if kwargs.get('end') is not None:
+            self.end = now() + timedelta(hours=kwargs.get('end'))
+        else:
+            self.end = now() + timedelta(hours=1)
         # note that this defaults to seven, because the default rule is daily
         # for one week, so 7 days
-        self.end_recurring_period = now() + timedelta(
-            days=kwargs.get('end_recurring_period') or 7)
+        if self.rule:
+            self.end_recurring_period = now() + timedelta(
+                hours=kwargs.get('end_recurring_period') or 0, days=7)
+        else:
+            self.end_recurring_period = None
         if create:
             self.save()
 
@@ -98,7 +108,7 @@ class OccurrenceFactory(EventFactoryMixin):
 
     event = factory.SubFactory(EventFactory)
     original_start = now()
-    original_end = now()
+    original_end = now() + timedelta(hours=1)
 
     @factory.post_generation(extract_prefix='set')
     def time_offset(self, create, extracted, **kwargs):
@@ -108,22 +118,25 @@ class OccurrenceFactory(EventFactoryMixin):
             'set__fieldname=value'
 
         where fieldname is the name of the field to set (e.g. start) and value
-        is the time offset in days to set.
+        is the time offset in hours to set.
 
-        To set start 4 days into the past you would pass the following:
+        To set start 4 hours into the past you would pass the following:
 
             'set__start=-4'
 
         """
         self.creation_date = now() + timedelta(
-            days=kwargs.get('creation_date') or 0)
+            hours=kwargs.get('creation_date') or 0)
         self.start = now() + timedelta(
-            days=kwargs.get('start') or 0)
+            hours=kwargs.get('start') or 0)
         self.end = now() + timedelta(
-            days=kwargs.get('end') or 0)
+            hours=kwargs.get('end') or 0)
         self.original_start = now() + timedelta(
-            days=kwargs.get('original_start') or 0)
-        self.original_end = now() + timedelta(
-            days=kwargs.get('original_end') or 0)
+            hours=kwargs.get('original_start') or 0)
+        if kwargs.get('original_end') is not None:
+            self.original_end = now() + timedelta(hours=kwargs.get(
+                'original_end'))
+        else:
+            self.original_end = now() + timedelta(hours=1)
         if create:
             self.save()
