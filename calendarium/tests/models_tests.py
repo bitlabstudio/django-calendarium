@@ -3,6 +3,7 @@ from django.test import TestCase
 from django.utils.timezone import timedelta
 
 from calendarium.models import (
+    Event,
     EventCategory,
     EventRelation,
     Occurrence,
@@ -12,11 +13,35 @@ from calendarium.tests.factories import EventFactory, OccurrenceFactory
 from calendarium.utils import now
 
 
+class EventModelManagerTestCase(TestCase):
+    """Tests for the ``EventModelManager`` custom manager."""
+    longMessage = True
+
+    def setUp(self):
+        # event that only occurs once
+        self.event = EventFactory(rule=None)
+        # event that occurs for one week daily with one custom occurrence
+        self.event_daily = EventFactory()
+        self.occurrence = OccurrenceFactory(
+            event=self.event, title='foo_occurrence')
+
+    def test_get_occurrences(self):
+        """Test for the ``get_occurrences`` manager method."""
+        occurrences = Event.objects.get_occurrences(
+            now(), now() + timedelta(days=7))
+        self.assertEqual(len(occurrences), 8, msg=(
+            '``get_occurrences`` should return the correct amount of'
+            ' occurrences.'))
+
+
 class EventTestCase(TestCase):
     """Tests for the ``Event`` model."""
     longMessage = True
 
     def setUp(self):
+        self.not_found_event = EventFactory(
+            set__start=-24, set__end=-24, set__creation_date=-24,
+            rule=None)
         self.event = EventFactory()
         self.occurrence = OccurrenceFactory(
             event=self.event, title='foo_occurrence')
@@ -32,6 +57,12 @@ class EventTestCase(TestCase):
         occurrence_list = self.event._get_occurrence_list(
             now(), now() + timedelta(days=8))
         self.assertEqual(len(occurrence_list), 7, msg=(
+            'The method ``_get_occurrence_list`` did not return the expected'
+            ' amount of items.'))
+
+        occurrence_list = self.not_found_event._get_occurrence_list(
+            now(), now() + timedelta(days=8))
+        self.assertEqual(len(occurrence_list), 0, msg=(
             'The method ``_get_occurrence_list`` did not return the expected'
             ' amount of items.'))
 

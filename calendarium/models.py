@@ -23,21 +23,26 @@ class EventModelManager(models.Manager):
     """Custom manager for the ``Event`` model class."""
     def get_occurrences(self, start, end):
         """Returns a list of events and occurrences for the given period."""
-        # get events of which the end_recurring_period is after the start
-        # of this period and the start is before the end of this period
-        # if they do not have a end_recurring_period, their end needs to end
-        # before the period starts
+        # retrieving relevant events
+        # TODO currently for events with a rule, I can't properly find out when
+        # the last occurrence of the event ends, or find a way to filter that,
+        # so I'm still fetching **all** events before this period, that have a
+        # end_recurring_period.
+        # For events without a rule, I fetch only the relevant ones.
+        qs = self.get_query_set()
+        qs = qs.filter(start__lt=end)
+        relevant_events = qs.filter(
+            models.Q(end_recurring_period__isnull=True, end__gt=start) |
+            models.Q(end_recurring_period__isnull=False))
 
         # get all occurrences for those events that don't already have a
         # persistent match and that lie in this period.
-            # This should be done by calling the get_occurrences() method of
-            # each event previously fetched.
-
-            # the get_occurences method should itself replace all persistent
-            # occurrences for the calling event, compute events that are in the
-            # given period and so only return appendable data
+        all_occurrences = []
+        for event in relevant_events:
+            all_occurrences.extend(event.get_occurrences(start, end))
 
         # sort and return
+        return sorted(all_occurrences, key=lambda x: x.start)
 
 
 class EventModelMixin(models.Model):
@@ -104,12 +109,15 @@ class Event(EventModelMixin):
 
     end_recurring_period = models.DateTimeField(
         verbose_name=_('End of recurring'),
+        blank=True, null=True,
     )
 
     title = models.CharField(
         max_length=256,
         verbose_name=_('Title'),
     )
+
+    objects = EventModelManager()
 
     def _create_occurrence(self, occ_start, occ_end=None):
         """Creates an Occurrence instance."""
@@ -142,6 +150,12 @@ class Event(EventModelMixin):
                 occ_end = occ_start + length
                 occurrences.append(self._create_occurrence(occ_start, occ_end))
             return occurrences
+        else:
+            # check if event is in the period
+            if self.start < end and self.end >= start:
+                return [self._create_occurrence(self.start, self.end)]
+            else:
+                return []
 
     def get_occurrences(self, start, end):
         """Returns all occurrences from start to end."""
