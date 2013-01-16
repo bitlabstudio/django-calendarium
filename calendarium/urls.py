@@ -8,17 +8,14 @@ urlpatterns = patterns(
     '',
     url(r'^(?P<year>\d+)/(?P<month>\d+)/$',
         MonthView.as_view(),
-        name='calendar_month',
-    ),
+        name='calendar_month'),
 
     url(r'^(?P<year>\d+)/week/(?P<week>\d+)/$',
         WeekView.as_view(),
-        name='calendar_week',
-    ),
+        name='calendar_week'),
 
     url(r'^(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$',
         DayView.as_view(),
-        name='calendar_day',
-    ),
+        name='calendar_day'),
 
 )
