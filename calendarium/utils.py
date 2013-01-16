@@ -8,6 +8,7 @@ https://github.com/thauber/django-schedule/blob/master/schedule/utils.py
 
 
 """
+import time
 from django.utils import timezone
 
 
@@ -22,6 +23,16 @@ def now(**kwargs):
 
     """
     return timezone.now(**kwargs).replace(second=0, microsecond=0)
+
+
+def monday_of_week(year, month):
+    """
+    Returns a datetime for the monday of the given week of the given year.
+
+    """
+    str_time = time.strptime('{0} {1} 1'.format(year, month), '%Y %W %w')
+    return timezone.datetime(
+        year=str_time.tm_year, month=str_time.tm_mon, day=str_time.tm_mday)
 
 
 class OccurrenceReplacer(object):
