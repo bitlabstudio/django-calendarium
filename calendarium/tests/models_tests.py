@@ -34,6 +34,13 @@ class EventModelManagerTestCase(TestCase):
             ' occurrences.'))
 
 
+        jetzt = now()
+        occurrences = Event.objects.get_occurrences(now(), now())
+        self.assertEqual(len(occurrences), 2, msg=(
+            '``get_occurrences`` should return the correct amount of'
+            ' occurrences for one day.'))
+
+
 class EventTestCase(TestCase):
     """Tests for the ``Event`` model."""
     longMessage = True
