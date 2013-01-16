@@ -33,8 +33,6 @@ class EventModelManagerTestCase(TestCase):
             '``get_occurrences`` should return the correct amount of'
             ' occurrences.'))
 
-
-        jetzt = now()
         occurrences = Event.objects.get_occurrences(now(), now())
         self.assertEqual(len(occurrences), 2, msg=(
             '``get_occurrences`` should return the correct amount of'
