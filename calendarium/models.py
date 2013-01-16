@@ -46,9 +46,8 @@ class EventModelManager(models.Manager):
 
         # get all occurrences for those events that don't already have a
         # persistent match and that lie in this period.
-        all_occurrences = []
-        for event in relevant_events:
-            all_occurrences.extend(event.get_occurrences(start, end))
+        all_occurrences = [
+            event.get_occurrences(start, end) for event in relevant_events]
 
         # sort and return
         return sorted(all_occurrences, key=lambda x: x.start)
@@ -163,8 +162,7 @@ class Event(EventModelMixin):
             # check if event is in the period
             if self.start < end and self.end >= start:
                 return [self._create_occurrence(self.start, self.end)]
-            else:
-                return []
+        return []
 
     def get_occurrences(self, start, end):
         """Returns all occurrences from start to end."""
