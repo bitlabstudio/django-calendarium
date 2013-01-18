@@ -46,8 +46,9 @@ class EventModelManager(models.Manager):
 
         # get all occurrences for those events that don't already have a
         # persistent match and that lie in this period.
-        all_occurrences = [
-            event.get_occurrences(start, end) for event in relevant_events]
+        all_occurrences = []
+        for event in relevant_events:
+            all_occurrences.extend(event.get_occurrences(start, end))
 
         # sort and return
         return sorted(all_occurrences, key=lambda x: x.start)
@@ -80,6 +81,9 @@ class EventModelMixin(models.Model):
         verbose_name=_('Description'),
         blank=True,
     )
+
+    def __unicode__(self):
+        return self.title
 
     class Meta:
         abstract = True
@@ -215,6 +219,9 @@ class EventCategory(models.Model):
         verbose_name=_('Color'),
     )
 
+    def __unicode__(self):
+        return self.name
+
 
 class EventRelation(models.Model):
     """
@@ -252,6 +259,10 @@ class EventRelation(models.Model):
         max_length=32,
         blank=True, null=True,
     )
+
+    def __unicode__(self):
+        return 'type "{0}" for "{1}"'.format(
+            self.relation_type, self.event.title)
 
 
 class Occurrence(EventModelMixin):
@@ -327,6 +338,9 @@ class Rule(models.Model):
         verbose_name=_("params"),
         blank=True, null=True,
     )
+
+    def __unicode__(self):
+        return self.name
 
     def get_params(self):
         return json.loads(self.params)
