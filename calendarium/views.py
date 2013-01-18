@@ -27,7 +27,7 @@ class MonthView(TemplateView):
         first = datetime(year=self.year, month=self.month, day=1)
         last = datetime(year=self.year, month=self.month, day=month_range[1])
         occurrences = Event.objects.get_occurrences(first, last)
-        ctx = {'occurrences': occurrences}
+        ctx = {'object_list': occurrences}
         return ctx
 
 
@@ -48,7 +48,7 @@ class WeekView(TemplateView):
         monday = monday_of_week(self.year, self.week)
         sunday = monday + timedelta(days=7)
         occurrences = Event.objects.get_occurrences(monday, sunday)
-        ctx = {'occurrences': occurrences}
+        ctx = {'object_list': occurrences}
         return ctx
 
 
@@ -69,5 +69,5 @@ class DayView(TemplateView):
     def get_context_data(self, **kwargs):
         date = datetime(year=self.year, month=self.month, day=self.day)
         occurrences = Event.objects.get_occurrences(date, date)
-        ctx = {'occurrences': occurrences}
+        ctx = {'object_list': occurrences}
         return ctx
