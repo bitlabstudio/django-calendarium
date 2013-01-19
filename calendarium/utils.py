@@ -31,8 +31,8 @@ def monday_of_week(year, month):
 
     """
     str_time = time.strptime('{0} {1} 1'.format(year, month), '%Y %W %w')
-    return timezone.datetime(
-        year=str_time.tm_year, month=str_time.tm_mon, day=str_time.tm_mday)
+    return timezone.datetime(year=str_time.tm_year, month=str_time.tm_mon,
+                             day=str_time.tm_mday, tzinfo=timezone.utc)
 
 
 class OccurrenceReplacer(object):

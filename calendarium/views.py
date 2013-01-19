@@ -2,7 +2,7 @@
 import calendar
 
 from django.http import Http404
-from django.utils.timezone import datetime, localtime, timedelta
+from django.utils.timezone import datetime, timedelta, utc
 from django.views.generic import TemplateView
 
 from calendarium.models import Event
@@ -24,9 +24,9 @@ class MonthView(TemplateView):
 
     def get_context_data(self, **kwargs):
         month_range = calendar.monthrange(self.year, self.month)
-        first = localtime(datetime(year=self.year, month=self.month, day=1))
-        last = localtime(datetime(year=self.year, month=self.month,
-                                  day=month_range[1]))
+        first = datetime(year=self.year, month=self.month, day=1, tzinfo=utc)
+        last = datetime(year=self.year, month=self.month, day=month_range[1],
+                        tzinfo=utc)
         occurrences = Event.objects.get_occurrences(first, last)
         ctx = {'object_list': occurrences}
         return ctx
@@ -68,7 +68,8 @@ class DayView(TemplateView):
         return super(DayView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        date = datetime(year=self.year, month=self.month, day=self.day)
+        date = datetime(year=self.year, month=self.month, day=self.day,
+                        tzinfo=utc)
         occurrences = Event.objects.get_occurrences(date, date)
         ctx = {'object_list': occurrences}
         return ctx

@@ -59,6 +59,7 @@ class WeekViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/partials/calendar_week.html',
             msg=('Returned the wrong template for AJAX request.'))
+        self.is_not_callable(kwargs={'year': self.year, 'week': '60'})
 
 
 class DayViewTestCase(ViewTestMixin, TestCase):
@@ -86,3 +87,5 @@ class DayViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/partials/calendar_day.html',
             msg=('Returned the wrong template for AJAX request.'))
+        self.is_not_callable(kwargs={'year': self.year, 'month': '14',
+                                     'day': self.day})

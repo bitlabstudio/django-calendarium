@@ -2,6 +2,8 @@
 import os
 
 DEBUG = True
+USE_TZ = True
+TIME_ZONE = 'Asia/Singapore'
 
 SITE_ID = 1
 
