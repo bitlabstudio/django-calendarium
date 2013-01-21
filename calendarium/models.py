@@ -12,6 +12,7 @@ from dateutil import rrule
 
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _

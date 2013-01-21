@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block main %}
+<h1>{{ object }}</h1>
+<table>
+    <tr>
+        <th>{% trans "Start" %}</th>
+        <td>{{ object.start }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "End" %}</th>
+        <td>{{ object.end }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "Category" %}</th>
+        <td>{{ object.category }}</td>
+    </tr>
+    <tr>
+        <th>{% trans "Description" %}</th>
+        <td>{{ object.description }}</td>
+    </tr>
+</table>
+<a href="javascript:history.back()">{% trans "back" %}</a>
+{% if request.user.is_staff %}
+    <a href="{% url "calendar_event_update" pk=object.pk %}">{% trans "Edit" %}</a>
+    <a href="{% url "calendar_event_delete" pk=object.pk %}">{% trans "Delete" %}</a>
+{% endif %}
+{% endblock %}

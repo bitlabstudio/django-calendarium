@@ -2,11 +2,17 @@
 from django.utils.timezone import now
 from django.test import TestCase
 
+from django_libs.tests.factories import UserFactory
 from django_libs.tests.mixins import ViewTestMixin
+
+from calendarium.models import Event
+from calendarium.tests.factories import EventFactory
 
 
 class MonthViewTestCase(ViewTestMixin, TestCase):
     """Tests for the ``MonthView`` view class."""
+    longMessage = True
+
     def get_view_name(self):
         return 'calendar_month'
 
@@ -41,6 +47,8 @@ class MonthViewTestCase(ViewTestMixin, TestCase):
 
 class WeekViewTestCase(ViewTestMixin, TestCase):
     """Tests for the ``WeekView`` view class."""
+    longMessage = True
+
     def get_view_name(self):
         return 'calendar_week'
 
@@ -72,6 +80,8 @@ class WeekViewTestCase(ViewTestMixin, TestCase):
 
 class DayViewTestCase(ViewTestMixin, TestCase):
     """Tests for the ``DayView`` view class."""
+    longMessage = True
+
     def get_view_name(self):
         return 'calendar_day'
 
@@ -100,3 +110,60 @@ class DayViewTestCase(ViewTestMixin, TestCase):
             msg=('Returned the wrong template for AJAX request.'))
         self.is_not_callable(kwargs={'year': self.year, 'month': '14',
                                      'day': self.day})
+
+
+class EventUpdateViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``EventUpdateView`` view class."""
+    longMessage = True
+
+    def get_view_name(self):
+        return 'calendar_event_update'
+
+    def get_view_kwargs(self):
+        return {'pk': self.event.pk}
+
+    def setUp(self):
+        self.event = EventFactory()
+        self.user = UserFactory()
+
+    def test_view(self):
+        self.is_not_callable(user=self.user)
+        self.user.is_staff = True
+        self.user.save()
+        self.should_be_callable_when_authenticated(self.user)
+
+
+class EventCreateViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``EventCreateView`` view class."""
+    longMessage = True
+
+    def get_view_name(self):
+        return 'calendar_event_create'
+
+    def setUp(self):
+        self.user = UserFactory()
+
+    def test_view(self):
+        self.is_not_callable(user=self.user)
+        self.user.is_staff = True
+        self.user.save()
+        self.should_be_callable_when_authenticated(self.user)
+        self.is_callable(data={'delete': True})
+        self.assertEqual(Event.objects.all().count(), 0)
+
+
+class EventDetailViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``EventDetailView`` view class."""
+    longMessage = True
+
+    def get_view_name(self):
+        return 'calendar_event_detail'
+
+    def get_view_kwargs(self):
+        return {'pk': self.event.pk}
+
+    def setUp(self):
+        self.event = EventFactory()
+
+    def test_view(self):
+        self.is_callable()

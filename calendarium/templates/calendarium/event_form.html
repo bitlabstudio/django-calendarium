@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block main %}
+<h1>
+    {% if form.instance.id %}
+        {% trans "Update" %} {{ form.instance }}
+    {% else %}
+        {% trans "Create event" %}
+    {% endif %}
+</h1>
+<form method="post" action=".">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="{% trans "Save" %}" />
+</form>
+{% if form.instance.id %}
+    <a href="{% url "calendar_event_delete" pk=form.instance.pk %}">{% trans "Delete" %}</a>
+{% endif %}
+{% endblock %}

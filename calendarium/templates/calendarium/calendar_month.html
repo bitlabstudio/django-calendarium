@@ -9,6 +9,9 @@
     <input type="submit" name="previous" value="{% trans "Previous" %}" />
     <input type="submit" name="next" value="{% trans "Next" %}" />
     <input type="submit" name="today" value="{% trans "Today" %}" />
+    {% if request.user.is_staff %}
+        <a href="{% url "calendar_event_create" %}">{% trans "Create new event" %}</a>
+    {% endif %}
 </form>
 <table>
     <tr>
@@ -30,7 +33,7 @@
                         {% if day != 0 %}
                             {% if current %}<strong>{% endif %}<a href="{% url "calendar_day" year=date|date:'Y' month=date|date:'m' day=day %}">{{ day }}</a>{% if current %}</strong>{% endif %}
                             {% for occurrence in occurrences %}
-                                <p>{{ occurrence }}</p>
+                                <p><a href="{% url "calendar_event_detail" pk=occurrence.event.pk %}">{{ occurrence }}</a></p>
                             {% endfor %}
                         {% endif %}
                     </td>

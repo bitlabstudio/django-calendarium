@@ -1,12 +1,20 @@
 """Views for the ``calendarium`` app."""
 import calendar
 
+from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
+from django.utils.decorators import method_decorator
 from django.utils.timezone import datetime, now, timedelta, utc
-from django.views.generic import TemplateView
+from django.views.generic import (
+    CreateView,
+    DeleteView,
+    DetailView,
+    TemplateView,
+    UpdateView,
+)
 
-from calendarium.models import Event
+from calendarium.models import Event, Occurrence
 from calendarium.utils import monday_of_week
 
 
@@ -134,3 +142,34 @@ class DayView(TemplateView):
         occurrences = Event.objects.get_occurrences(self.date, self.date)
         ctx = {'date': self.date, 'occurrences': occurrences}
         return ctx
+
+
+class EventDetailView(DetailView):
+    """View to return information of an event."""
+    model = Event
+
+
+class EventMixin(object):
+    """Mixin to handle event-related functions."""
+    model = Event
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_staff:
+            raise Http404
+        return super(EventMixin, self).dispatch(request, *args, **kwargs)
+
+
+class EventUpdateView(EventMixin, UpdateView):
+    """View to update information of an event."""
+    pass
+
+
+class EventCreateView(EventMixin, CreateView):
+    """View to create an event."""
+    pass
+
+
+class EventDeleteView(EventMixin, DeleteView):
+    """View to delete an event."""
+    pass

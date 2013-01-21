@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load url from future %}
+
+{% block main %}
+<h1>{% trans "Delete" %} {{ object }}</h1>
+<form method="post" action=".">
+    {% csrf_token %}
+    {% trans "Do you really want to delete this event?" %}
+    <input type="submit" value="{% trans "Delete" %}" />
+</form>
+{% endblock %}
