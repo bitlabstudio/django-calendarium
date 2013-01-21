@@ -24,6 +24,9 @@ class MonthViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/calendar_month.html', msg=(
                 'Returned the wrong template.'))
+        self.is_callable(method='POST', data={'next': True})
+        self.is_callable(method='POST', data={'previous': True})
+        self.is_callable(method='POST', data={'today': True})
 
         # AJAX call
         resp = self.client.get(
@@ -47,7 +50,7 @@ class WeekViewTestCase(ViewTestMixin, TestCase):
     def setUp(self):
         self.year = now().year
         # current week number
-        self.week = now().date().isocalendar()[1] - 1
+        self.week = now().date().isocalendar()[1]
 
     def test_view(self):
         """Tests for the ``WeekView`` view class."""
@@ -55,6 +58,9 @@ class WeekViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/calendar_week.html', msg=(
                 'Returned the wrong template.'))
+        self.is_callable(method='POST', data={'next': True})
+        self.is_callable(method='POST', data={'previous': True})
+        self.is_callable(method='POST', data={'today': True})
 
         resp = self.client.get(
             self.get_url(), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
@@ -83,6 +89,9 @@ class DayViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/calendar_day.html', msg=(
                 'Returned the wrong template.'))
+        self.is_callable(method='POST', data={'next': True})
+        self.is_callable(method='POST', data={'previous': True})
+        self.is_callable(method='POST', data={'today': True})
 
         resp = self.client.get(
             self.get_url(), HTTP_X_REQUESTED_WITH='XMLHttpRequest')

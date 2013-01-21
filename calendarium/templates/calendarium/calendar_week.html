@@ -4,10 +4,16 @@
 
 {% block main %}
 <h1>{% trans "Occurrences" %}</h1>
+<form action="." method="post">
+    {% csrf_token %}
+    <input type="submit" name="previous" value="{% trans "Previous" %}" />
+    <input type="submit" name="next" value="{% trans "Next" %}" />
+    <input type="submit" name="today" value="{% trans "Today" %}" />
+</form>
 <table>
     <tr>
         {% for date, occurrences, current in week %}
-            <th>{{ date|date:'D m/d' }}</th>
+            <th><a href="{% url "calendar_day" year=date|date:'Y' month=date|date:'m' day=date|date:'d' %}">{{ date|date:'D m/d' }}</a></th>
         {% endfor %}
     </tr>
     <tr>

@@ -4,6 +4,12 @@
 
 {% block main %}
 <h1>{% trans "Occurrences" %}</h1>
+<form action="." method="post">
+    {% csrf_token %}
+    <input type="submit" name="previous" value="{% trans "Previous" %}" />
+    <input type="submit" name="next" value="{% trans "Next" %}" />
+    <input type="submit" name="today" value="{% trans "Today" %}" />
+</form>
 <table class="table">
     <tr>
         <th>{{ date|date:'D m/d' }}</th>
