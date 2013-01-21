@@ -2,7 +2,7 @@
 import calendar
 
 from django.http import Http404
-from django.utils.timezone import datetime, timedelta, utc
+from django.utils.timezone import datetime, localtime, now, timedelta, utc
 from django.views.generic import TemplateView
 
 from calendarium.models import Event
@@ -23,12 +23,23 @@ class MonthView(TemplateView):
         return super(MonthView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        month_range = calendar.monthrange(self.year, self.month)
-        first = datetime(year=self.year, month=self.month, day=1, tzinfo=utc)
-        last = datetime(year=self.year, month=self.month, day=month_range[1],
-                        tzinfo=utc)
-        occurrences = Event.objects.get_occurrences(first, last)
-        ctx = {'object_list': occurrences}
+        month = [[]]
+        week = 0
+        for day in calendar.Calendar().itermonthdays(self.year, self.month):
+            current = False
+            if day:
+                date = datetime(year=self.year, month=self.month, day=day,
+                                tzinfo=utc)
+                occurrences = Event.objects.get_occurrences(date, date)
+                if date.date() == now().date():
+                    current = True
+            else:
+                occurrences = []
+            month[week].append((day, occurrences, current))
+            if len(month[week]) == 7:
+                month.append([])
+                week += 1
+        ctx = {'month': month}
         return ctx
 
 
@@ -46,10 +57,18 @@ class WeekView(TemplateView):
         return super(WeekView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        monday = monday_of_week(self.year, self.week)
-        sunday = monday + timedelta(days=7)
-        occurrences = Event.objects.get_occurrences(monday, sunday)
-        ctx = {'object_list': occurrences}
+        date = monday_of_week(self.year, self.week)
+        week = []
+        day = 0
+        while day < 7:
+            current = False
+            occurrences = Event.objects.get_occurrences(date, date)
+            if date.date() == now().date():
+                current = True
+            week.append((date, occurrences, current))
+            day += 1
+            date = date + timedelta(days=1)
+        ctx = {'week': week}
         return ctx
 
 
@@ -71,5 +90,5 @@ class DayView(TemplateView):
         date = datetime(year=self.year, month=self.month, day=self.day,
                         tzinfo=utc)
         occurrences = Event.objects.get_occurrences(date, date)
-        ctx = {'object_list': occurrences}
+        ctx = {'date': date, 'occurrences': occurrences}
         return ctx

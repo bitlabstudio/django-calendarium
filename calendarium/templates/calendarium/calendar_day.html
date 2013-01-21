@@ -4,9 +4,14 @@
 
 {% block main %}
 <h1>{% trans "Occurrences" %}</h1>
-<ul>
-    {% for occurrence in object_list %}
-        <li>{{ occurrence }}</li>
-    {% endfor %}
-</ul>
+<table class="table">
+    <tr>
+        <th>{{ date|date:'D m/d' }}</th>
+    </tr>
+    <tr>
+        {% for occurrence in occurrences %}
+            <td><p>{{ occurrence }}</p></td>
+        {% endfor %}
+    </tr>
+</table>
 {% endblock %}

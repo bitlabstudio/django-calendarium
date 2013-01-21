@@ -4,9 +4,29 @@
 
 {% block main %}
 <h1>{% trans "Occurrences" %}</h1>
-<ul>
-    {% for occurrence in object_list %}
-        <li>{{ occurrence }}</li>
+<table>
+    <tr>
+        <th>{% trans "Monday" %}</td>
+        <th>{% trans "Tuesday" %}</td>
+        <th>{% trans "Wednesday" %}</td>
+        <th>{% trans "Thursday" %}</td>
+        <th>{% trans "Friday" %}</td>
+        <th>{% trans "Saturday" %}</td>
+        <th>{% trans "Sunday" %}</td>
+    </tr>
+    {% for week in month %}
+        <tr>
+            {% for day, occurrences, current in week %}
+                <td>
+                    {% if day != 0 %}
+                        {% if current %}<strong>{% endif %}{{ day }}{% if current %}</strong>{% endif %}
+                        {% for occurrence in occurrences %}
+                            <p>{{ occurrence }}</p>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
     {% endfor %}
-</ul>
+</table>
 {% endblock %}

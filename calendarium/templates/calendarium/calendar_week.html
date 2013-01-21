@@ -4,9 +4,20 @@
 
 {% block main %}
 <h1>{% trans "Occurrences" %}</h1>
-<ul>
-    {% for occurrence in object_list %}
-        <li>{{ occurrence }}</li>
-    {% endfor %}
-</ul>
+<table>
+    <tr>
+        {% for date, occurrences, current in week %}
+            <th>{{ date|date:'D m/d' }}</th>
+        {% endfor %}
+    </tr>
+    <tr>
+        {% for date, occurrences, current in week %}
+            <td>
+                {% for occurrence in occurrences %}
+                    <p>{{ occurrence }}</p>
+                {% endfor %}
+            </td>
+        {% endfor %}
+    </tr>
+</table>
 {% endblock %}

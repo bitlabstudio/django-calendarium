@@ -1,4 +1,5 @@
 """Tests for the views of the ``calendarium`` app."""
+from django.utils.timezone import now
 from django.test import TestCase
 
 from django_libs.tests.mixins import ViewTestMixin
@@ -13,8 +14,8 @@ class MonthViewTestCase(ViewTestMixin, TestCase):
         return {'year': self.year, 'month': self.month}
 
     def setUp(self):
-        self.year = 2012
-        self.month = 9
+        self.year = now().year
+        self.month = now().month
 
     def test_view(self):
         """Test for the ``MonthView`` view class."""
@@ -44,8 +45,9 @@ class WeekViewTestCase(ViewTestMixin, TestCase):
         return {'year': self.year, 'week': self.week}
 
     def setUp(self):
-        self.year = 2001
-        self.week = 22
+        self.year = now().year
+        # current week number
+        self.week = now().date().isocalendar()[1] - 1
 
     def test_view(self):
         """Tests for the ``WeekView`` view class."""
