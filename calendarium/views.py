@@ -96,7 +96,7 @@ class WeekView(TemplateView):
             week.append((date, occurrences, current))
             day += 1
             date = date + timedelta(days=1)
-        ctx = {'week': week, 'date': date}
+        ctx = {'week': week, 'date': date, 'week_nr': self.week}
         return ctx
 
 
