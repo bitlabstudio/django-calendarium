@@ -3,7 +3,7 @@ import calendar
 
 from django.core.urlresolvers import reverse
 from django.http import Http404, HttpResponseRedirect
-from django.utils.timezone import datetime, localtime, now, timedelta, utc
+from django.utils.timezone import datetime, now, timedelta, utc
 from django.views.generic import TemplateView
 
 from calendarium.models import Event
@@ -23,15 +23,15 @@ class MonthView(TemplateView):
             if request.POST.get('next'):
                 new_date = datetime(self.year, self.month, 1) + timedelta(
                     days=31)
-                return HttpResponseRedirect(reverse('calendar_month',kwargs={
+                return HttpResponseRedirect(reverse('calendar_month', kwargs={
                     'year': new_date.year, 'month': new_date.month}))
             elif request.POST.get('previous'):
                 new_date = datetime(self.year, self.month, 1) - timedelta(
                     days=1)
-                return HttpResponseRedirect(reverse('calendar_month',kwargs={
+                return HttpResponseRedirect(reverse('calendar_month', kwargs={
                     'year': new_date.year, 'month': new_date.month}))
             elif request.POST.get('today'):
-                return HttpResponseRedirect(reverse('calendar_month',kwargs={
+                return HttpResponseRedirect(reverse('calendar_month', kwargs={
                     'year': now().year, 'month': now().month}))
         if request.is_ajax():
             self.template_name = 'calendarium/partials/calendar_month.html'
@@ -70,14 +70,14 @@ class WeekView(TemplateView):
         if request.method == 'POST':
             if request.POST.get('next'):
                 date = monday_of_week(self.year, self.week) + timedelta(days=7)
-                return HttpResponseRedirect(reverse('calendar_week',kwargs={
+                return HttpResponseRedirect(reverse('calendar_week', kwargs={
                     'year': date.year, 'week': date.date().isocalendar()[1]}))
             elif request.POST.get('previous'):
                 date = monday_of_week(self.year, self.week) - timedelta(days=7)
-                return HttpResponseRedirect(reverse('calendar_week',kwargs={
+                return HttpResponseRedirect(reverse('calendar_week', kwargs={
                     'year': date.year, 'week': date.date().isocalendar()[1]}))
             elif request.POST.get('today'):
-                return HttpResponseRedirect(reverse('calendar_week',kwargs={
+                return HttpResponseRedirect(reverse('calendar_week', kwargs={
                     'year': now().year,
                     'week': now().date().isocalendar()[1]}))
         if request.is_ajax():
@@ -96,7 +96,7 @@ class WeekView(TemplateView):
             week.append((date, occurrences, current))
             day += 1
             date = date + timedelta(days=1)
-        ctx = {'week': week}
+        ctx = {'week': week, 'date': date}
         return ctx
 
 
@@ -116,14 +116,14 @@ class DayView(TemplateView):
         if request.method == 'POST':
             if request.POST.get('next'):
                 date = self.date + timedelta(days=1)
-                return HttpResponseRedirect(reverse('calendar_day',kwargs={
+                return HttpResponseRedirect(reverse('calendar_day', kwargs={
                     'year': date.year, 'month': date.month, 'day': date.day}))
             elif request.POST.get('previous'):
                 date = self.date - timedelta(days=1)
-                return HttpResponseRedirect(reverse('calendar_day',kwargs={
+                return HttpResponseRedirect(reverse('calendar_day', kwargs={
                     'year': date.year, 'month': date.month, 'day': date.day}))
             elif request.POST.get('today'):
-                return HttpResponseRedirect(reverse('calendar_day',kwargs={
+                return HttpResponseRedirect(reverse('calendar_day', kwargs={
                     'year': now().year, 'month': now().month,
                     'day': now().day}))
         if request.is_ajax():
