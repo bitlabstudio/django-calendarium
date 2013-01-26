@@ -172,8 +172,15 @@ class Event(EventModelMixin):
                 return [self._create_occurrence(self.start, self.end)]
         return []
 
-    def get_occurrences(self, start, end):
+    def get_occurrences(self, start=None, end=None):
         """Returns all occurrences from start to end."""
+        if not start:
+            start = self.start
+        if not end:
+            if self.end_recurring_period:
+                end = self.end_recurring_period
+            else:
+                end = self.end
         # get persistent occurrences
         # TODO already filter instead of adding them in the end?
         persistent_occurrences = self.occurrences.all()
