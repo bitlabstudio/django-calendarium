@@ -41,9 +41,10 @@ class RuleFactory(factory.Factory):
 
     name = factory.Sequence(lambda n: 'rule{0}'.format(n))
     description = factory.Sequence(lambda n: 'description{0}'.format(n))
-    # standard is set to DAILY and one week long
+    # standard is set to DAILY
     frequency = 'DAILY'
-    params = '{"count": 7}'
+    # params are only needed for more precise rules, empty params are allowed
+    params = ''
 
 
 class EventFactory(EventFactoryMixin):
@@ -58,7 +59,6 @@ class EventFactory(EventFactoryMixin):
 
     category = factory.SubFactory(EventCategoryFactory)
     rule = factory.SubFactory(RuleFactory)
-    end_recurring_period = now()
 
     @factory.post_generation(extract_prefix='set')
     def time_offset(self, create, extracted, **kwargs):
@@ -83,10 +83,10 @@ class EventFactory(EventFactoryMixin):
         else:
             self.end = now() + timedelta(hours=1)
         # note that this defaults to seven, because the default rule is daily
-        # for one week, so 7 days
+        # for one week, so 6 days after the current
         if self.rule:
             self.end_recurring_period = now() + timedelta(
-                hours=kwargs.get('end_recurring_period') or 0, days=7)
+                hours=kwargs.get('end_recurring_period') or 0, days=6)
         else:
             self.end_recurring_period = None
         if create:
