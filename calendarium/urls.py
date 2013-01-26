@@ -8,6 +8,9 @@ from calendarium.views import (
     EventDetailView,
     EventUpdateView,
     MonthView,
+    OccurrenceDeleteView,
+    OccurrenceDetailView,
+    OccurrenceUpdateView,
     WeekView,
 )
 
@@ -30,6 +33,19 @@ urlpatterns = patterns(
     url(r'^event/(?P<pk>\d+)/delete/$',
         EventDeleteView.as_view(),
         name='calendar_event_delete'),
+
+    # occurrence views
+    url(r'^event/(?P<pk>\d+)/occurrence/(?P<index>\d+)/$',
+        OccurrenceDetailView.as_view(),
+        name='calendar_occurrence_detail'),
+
+    url(r'^event/(?P<pk>\d+)/occurrence/(?P<index>\d+)/update/$',
+        OccurrenceUpdateView.as_view(),
+        name='calendar_occurrence_update'),
+
+    url(r'^event/(?P<pk>\d+)/occurrence/(?P<index>\d+)/delete/$',
+        OccurrenceDeleteView.as_view(),
+        name='calendar_occurrence_delete'),
 
     # calendar views
     url(r'^(?P<year>\d+)/(?P<month>\d+)/$',

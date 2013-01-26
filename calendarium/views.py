@@ -14,6 +14,7 @@ from django.views.generic import (
     UpdateView,
 )
 
+from claendarium.forms import OccurrenceForm
 from calendarium.models import Event, Occurrence
 from calendarium.utils import monday_of_week
 
@@ -172,4 +173,39 @@ class EventCreateView(EventMixin, CreateView):
 
 class EventDeleteView(EventMixin, DeleteView):
     """View to delete an event."""
+    pass
+
+
+class OccurrenceViewMixin(object):
+    """Mixin to avoid repeating code for the Occurrence view classes."""
+    model = Occurrence
+    form_class = OccurrenceForm
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.event = Event.objects.get(pk=kwargs.get('pk'))
+        except Event.DoesNotExist:
+            raise Http404
+        self.index = kwargs.get('index')
+        try:
+            self.occurrence = self.event.get_occurrences()[self.index]
+        except IndexError:
+            raise Http404
+
+    def get_queryset(self):
+        return self.occurrence
+
+
+class OccurrenceDeleteView(OccurrenceViewMixin, DeleteView):
+    """View to delete an occurrence of an event."""
+    pass
+
+
+class OccurrenceDetailView(OccurrenceViewMixin, DetailView):
+    """View to show information of an occurrence of an event."""
+    pass
+
+
+class OccurrenceUpdateView(OccurrenceViewMixin, UpdateView):
+    """View to edit an occurrence of an event."""
     pass

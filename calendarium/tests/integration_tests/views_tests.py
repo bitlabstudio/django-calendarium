@@ -1,12 +1,16 @@
 """Tests for the views of the ``calendarium`` app."""
-from django.utils.timezone import now
+# ! Never use the timezone now, import calendarium.utils.now instead always
+# inaccuracy on microsecond base can negatively influence your tests
+# from django.utils.timezone import now
+from django.utils.timezone import timedelta
 from django.test import TestCase
 
 from django_libs.tests.factories import UserFactory
 from django_libs.tests.mixins import ViewTestMixin
 
 from calendarium.models import Event
-from calendarium.tests.factories import EventFactory
+from calendarium.tests.factories import EventFactory, RuleFactory
+from calendarium.utils import now
 
 
 class MonthViewTestCase(ViewTestMixin, TestCase):
@@ -167,3 +171,45 @@ class EventDetailViewTestCase(ViewTestMixin, TestCase):
 
     def test_view(self):
         self.is_callable()
+
+
+class OccurrenceViewTestCaseMixin(object):
+    """Mixin to avoid repeating code for the Occurrence views."""
+    longMessage = True
+
+    def get_view_kwargs(self):
+        return {'pk': self.event.pk, 'index': 2}
+
+    def setUp(self):
+        self.rule = RuleFactory(name='daily')
+        self.start = now() - timedelta(days=1)
+        self.end = now() + timedelta(days=5)
+        self.event = EventFactory(
+            rule=self.rule, end_recurring_period=now() + timedelta(days=2))
+
+    def test_view(self):
+        # regular test with a valid request
+        self.is_callable()
+
+        # tests for an occurrence, that is out of range
+        kwargs = self.get_view_kwargs()
+        kwargs.update({'index': 5})
+        self.is_not_callable(kwargs=kwargs)
+
+
+class OccurrenceDeleteViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``OccurrenceDeleteView`` view class."""
+    def get_view_name(self):
+        return 'calendar_occurrence_delete'
+
+
+class OccurrenceDetailViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``OccurrenceDetailView`` view class."""
+    def get_view_name(self):
+        return 'calendar_occurrence_detail'
+
+
+class OccurrenceUpdateViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``OccurrenceUpdateView`` view class."""
+    def get_view_name(self):
+        return 'calendar_occurrence_update'
