@@ -132,6 +132,9 @@ class Event(EventModelMixin):
 
     objects = EventModelManager()
 
+    def get_absolute_url(self):
+        return reverse('calendar_event_detail', kwargs={'pk': self.pk})
+
     def _create_occurrence(self, occ_start, occ_end=None):
         """Creates an Occurrence instance."""
         # if the length is not altered, it is okay to only pass occ_start
@@ -344,4 +347,6 @@ class Rule(models.Model):
         return self.name
 
     def get_params(self):
-        return json.loads(self.params)
+        if self.params:
+            return json.loads(self.params)
+        return {}

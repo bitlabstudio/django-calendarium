@@ -3,13 +3,11 @@ from django.utils.translation import ugettext_lazy as _
 
 
 FREQUENCIES = {
-    'YEARLY': 'Yearly',
-    'MONTHLY': 'Monthly',
-    'WEEKLY': 'Weekly',
-    'DAILY': 'Daily',
-    'HOURLY': 'Hourly',
-    'MINUTELY': 'Minutely',
-    'SECONDLY': 'Secondly'
+    'YEARLY': 'YEARLY',
+    'MONTHLY': 'MONTHLY',
+    'WEEKLY': 'WEEKLY',
+    'DAILY': 'DAILY',
+    'HOURLY': 'HOURLY',
 }
 
 
@@ -19,6 +17,4 @@ FREQUENCY_CHOICES = (
     (FREQUENCIES['WEEKLY'], _('Weekly')),
     (FREQUENCIES['DAILY'], _('Daily')),
     (FREQUENCIES['HOURLY'], _('Hourly')),
-    (FREQUENCIES['MINUTELY'], _('Minutely')),
-    (FREQUENCIES['SECONDLY'], _('Secondly'))
 )
