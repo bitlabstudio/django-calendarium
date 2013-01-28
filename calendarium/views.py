@@ -14,7 +14,7 @@ from django.views.generic import (
     UpdateView,
 )
 
-from claendarium.forms import OccurrenceForm
+from calendarium.forms import OccurrenceForm
 from calendarium.models import Event, Occurrence
 from calendarium.utils import monday_of_week
 
