@@ -18,3 +18,16 @@ FREQUENCY_CHOICES = (
     (FREQUENCIES['DAILY'], _('Daily')),
     (FREQUENCIES['HOURLY'], _('Hourly')),
 )
+
+
+OCCURRENCE_DECISIONS = {
+    'all': 'all',
+    'following': 'following',
+    'this one': 'this one',
+}
+
+OCCURRENCE_DECISION_CHOICESS = (
+    (OCCURRENCE_DECISIONS['all'], _('all')),
+    (OCCURRENCE_DECISIONS['following'], _('following')),
+    (OCCURRENCE_DECISIONS['this one'], _('this one')),
+)
