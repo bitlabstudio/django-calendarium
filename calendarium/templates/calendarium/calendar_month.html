@@ -33,7 +33,7 @@
                         {% if day != 0 %}
                             {% if current %}<strong>{% endif %}<a href="{% url "calendar_day" year=date|date:'Y' month=date|date:'m' day=day %}">{{ day }}</a>{% if current %}</strong>{% endif %}
                             {% for occurrence in occurrences %}
-                                <p><a href="{% url "calendar_event_detail" pk=occurrence.event.pk %}">{{ occurrence }}</a></p>
+                                <p><a href="{% url "calendar_occurrence_detail" pk=occurrence.event.pk year=occurrence.start.year month=occurrence.start.month day=occurrence.start.day %}">{{ occurrence }}</a></p>
                             {% endfor %}
                         {% endif %}
                     </td>
