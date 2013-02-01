@@ -3,12 +3,12 @@ from django.test import TestCase
 from django.utils.timezone import timedelta
 
 from calendarium.models import (
-    Event,
     EventCategory,
     EventRelation,
     Occurrence,
     Rule,
 )
+from calendarium.models import Event
 from calendarium.tests.factories import EventFactory, OccurrenceFactory
 from calendarium.utils import now
 
@@ -50,6 +50,7 @@ class EventTestCase(TestCase):
         self.event = EventFactory()
         self.occurrence = OccurrenceFactory(
             event=self.event, title='foo_occurrence')
+        self.single_time_event = EventFactory(rule=None)
 
     def test_create_occurrence(self):
         """Test for ``_create_occurrence`` method."""
@@ -57,27 +58,32 @@ class EventTestCase(TestCase):
         self.assertEqual(type(occurrence), Occurrence, msg=(
             'Method ``_create_occurrence`` did not output the right type.'))
 
-    def test_get_occurrence_list(self):
-        """Test for the ``_get_occurrence_list`` method"""
-        occurrence_list = self.event._get_occurrence_list(
+    def test_get_occurrence_gen(self):
+        """Test for the ``_get_occurrence_gen`` method"""
+        occurrence_gen = self.event._get_occurrence_gen(
             now(), now() + timedelta(days=8))
-        self.assertEqual(len(occurrence_list), 7, msg=(
+        occ_list = [occ for occ in occurrence_gen]
+        self.assertEqual(len(occ_list), 7, msg=(
             'The method ``_get_occurrence_list`` did not return the expected'
             ' amount of items.'))
 
-        occurrence_list = self.not_found_event._get_occurrence_list(
+        occurrence_gen = self.not_found_event._get_occurrence_gen(
             now(), now() + timedelta(days=8))
-        self.assertEqual(len(occurrence_list), 0, msg=(
+        occ_list = [occ for occ in occurrence_gen]
+        self.assertEqual(len(occ_list), 0, msg=(
             'The method ``_get_occurrence_list`` did not return the expected'
             ' amount of items.'))
 
     def test_get_occurrences(self):
-        occurrences = self.event.get_occurrences(
+        occurrence_gen = self.event.get_occurrences(
             now(), now() + timedelta(days=7))
-        self.assertEqual(len(occurrences), 7, msg=(
+        occ_list = [occ for occ in occurrence_gen]
+        self.assertEqual(len(occ_list), 7, msg=(
             'Method ``get_occurrences`` did not output the correct amount'
             ' of occurrences.'))
-        self.assertEqual(occurrences[0].title, 'foo_occurrence', msg=(
+        occurrence_gen = self.event.get_occurrences(
+            now(), now() + timedelta(days=7))
+        self.assertEqual(occurrence_gen.next().title, 'foo_occurrence', msg=(
             'The persistent occurrence should have been first in the list.'))
 
 

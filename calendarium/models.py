@@ -17,7 +17,7 @@ from django.db import models
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _
 
-from calendarium.constants import FREQUENCY_CHOICES
+from calendarium.constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
 from calendarium.utils import OccurrenceReplacer
 
 
@@ -147,7 +147,14 @@ class Event(EventModelMixin):
             title=self.title, description=self.description,
             creation_date=self.creation_date, created_by=self.created_by)
 
-    def _get_occurrence_list(self, start, end):
+    def _get_date_gen(self, rr, start, end):
+        """Returns a generator to create the start dates for occurrences."""
+        date = rr.after(start)
+        while end and date <= end or not(end):
+            yield date
+            date = rr.after(date)
+
+    def _get_occurrence_gen(self, start, end):
         """Computes all occurrences for this event from start to end."""
         # get length of the event
         length = self.end - self.start
@@ -155,34 +162,28 @@ class Event(EventModelMixin):
         if self.rule:
             # if the end of the recurring period is before the end arg passed
             # the end of the recurring period should be the new end
-            if self.end_recurring_period and self.end_recurring_period < end:
+            if self.end_recurring_period and end and (
+                    self.end_recurring_period < end):
                 end = self.end_recurring_period
-            # get all the starts of the occs that end in the poriod
-            rr = self.get_rrule_object()
-            occ_start_list = rr.between(start - length, end, inc=True)
-            # create the occurrences of the period
-            occurrences = []
-            for occ_start in occ_start_list:
+            # making start date generator
+            occ_start_gen = self._get_date_gen(
+                self.get_rrule_object(),
+                start - length, end)
+
+            # chosing the first item from the generator to initiate
+            occ_start = occ_start_gen.next()
+            while not end or (end and occ_start <= end):
                 occ_end = occ_start + length
-                occurrences.append(self._create_occurrence(occ_start, occ_end))
-            return occurrences
+                yield self._create_occurrence(occ_start, occ_end)
+                occ_start = occ_start_gen.next()
         else:
             # check if event is in the period
-            if self.start < end and self.end >= start:
-                return [self._create_occurrence(self.start, self.end)]
-        return []
+            if (not end or self.start < end) and self.end >= start:
+                yield self._create_occurrence(self.start, self.end)
 
-    def get_occurrences(self, start=None, end=None):
+    def get_occurrences(self, start, end=None):
         """Returns all occurrences from start to end."""
-        if not start:
-            start = self.start
-        if not end:
-            if self.end_recurring_period:
-                end = self.end_recurring_period
-            else:
-                end = self.end
         # get persistent occurrences
-        # TODO already filter instead of adding them in the end?
         persistent_occurrences = self.occurrences.all()
 
         # setup occ_replacer with p_occs
@@ -190,25 +191,33 @@ class Event(EventModelMixin):
 
         # compute own occurrences according to rule that overlap with the
         # period
-        occurrences = self._get_occurrence_list(start, end)
-        # merge computed with persistent using the occ_replacer
-        final_occurrences = []
-        for occ in occurrences:
-            # check if there is a matching persistent occ and get it if true
+        occurrence_gen = self._get_occurrence_gen(start, end)
+        # get additional occs, that we need to take into concern
+        additional_occs = occ_replacer.get_additional_occurrences(
+            start, end)
+        occ = occurrence_gen.next()
+        while not end or (occ.start < end or any(additional_occs)):
             if occ_replacer.has_occurrence(occ):
                 p_occ = occ_replacer.get_occurrence(occ)
 
                 # if the persistent occ falls into the period, replace it
-                if p_occ.start < end and p_occ.end >= start:
-                    final_occurrences.append(p_occ)
+                if (end and p_occ.start < end) and p_occ.end >= start:
+                    estimated_occ = p_occ
+                else:
+                    occ = occurrence_gen.next()
+                    continue
             else:
                 # if there is no persistent match, use the original occ
-                final_occurrences.append(occ)
-        # then add persisted occurrences which originated outside of this
-        # period but now fall within it
-        final_occurrences += occ_replacer.get_additional_occurrences(
-            start, end)
-        return final_occurrences
+                estimated_occ = occ
+
+            if any(additional_occs) and (
+                    estimated_occ.start == additional_occs[0].start):
+                final_occ = additional_occs.pop(0)
+            else:
+                final_occ = estimated_occ
+            if not final_occ.cancelled:
+                yield final_occ
+            occ = occurrence_gen.next()
 
     def get_rrule_object(self):
         """Returns the rrule object for this ``Event``."""
@@ -317,6 +326,47 @@ class Occurrence(EventModelMixin):
         verbose_name=_('Title'),
         blank=True,
     )
+
+    def category(self):
+        return self.event.category
+
+    def delete_period(self, period):
+        """Deletes a set of occurrences based on the given decision."""
+        # check if this is the last or only one
+        is_last = False
+        is_only = False
+        gen = self.event.get_occurrences(
+            self.start, self.event.end_recurring_period)
+        occs = [occ for occ in gen]
+        if len(occs) == 1:
+            is_only = True
+        elif len(occs) > 1 and self == occs[-1]:
+            is_last = True
+        if period == OCCURRENCE_DECISIONS['all']:
+            # delete all persistent occurrences along with the parent event
+            self.event.occurrences.all().delete()
+            self.event.delete()
+        elif period == OCCURRENCE_DECISIONS['this one']:
+            # check if it is the last one. If so, shorten the recurring period,
+            # otherwise cancel the event
+            if is_last:
+                self.event.end_recurring_period = self.start - timedelta(
+                    days=1)
+                self.event.save()
+            elif is_only:
+                self.event.occurrences.all().delete()
+                self.event.delete()
+            else:
+                self.cancelled = True
+                self.save()
+        elif period == OCCURRENCE_DECISIONS['following']:
+            # just shorten the recurring period
+            self.event.end_recurring_period = self.start - timedelta(days=1)
+            self.event.occurrences.filter(start__gte=self.start).delete()
+            if is_only:
+                self.event.delete()
+            else:
+                self.event.save()
 
 
 class Rule(models.Model):
