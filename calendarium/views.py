@@ -3,6 +3,7 @@ import calendar
 
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
+from django.forms.models import model_to_dict
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.utils.timezone import datetime, now, timedelta, utc
@@ -14,6 +15,7 @@ from django.views.generic import (
     UpdateView,
 )
 
+from calendarium.constants import OCCURRENCE_DECISIONS
 from calendarium.forms import OccurrenceForm
 from calendarium.models import Event, Occurrence
 from calendarium.utils import monday_of_week
@@ -178,7 +180,6 @@ class EventDeleteView(EventMixin, DeleteView):
 
 class OccurrenceViewMixin(object):
     """Mixin to avoid repeating code for the Occurrence view classes."""
-    model = Occurrence
     form_class = OccurrenceForm
 
     def dispatch(self, request, *args, **kwargs):
@@ -186,19 +187,55 @@ class OccurrenceViewMixin(object):
             self.event = Event.objects.get(pk=kwargs.get('pk'))
         except Event.DoesNotExist:
             raise Http404
-        self.index = kwargs.get('index')
+        year = int(kwargs.get('year'))
+        month = int(kwargs.get('month'))
+        day = int(kwargs.get('day'))
         try:
-            self.occurrence = self.event.get_occurrences()[self.index]
-        except IndexError:
+            date = datetime(year, month, day, tzinfo=utc)
+        except TypeError:
             raise Http404
+        # this should retrieve the one single occurrence, that has a
+        # matching start date
+        try:
+            occ = Occurrence.objects.get(
+                start__year=year, start__month=month, start__day=day)
+        except Occurrence.DoesNotExist:
+            occ_gen = self.event.get_occurrences(self.event.start)
+            occ = occ_gen.next()
+            while occ.start.date() < date.date():
+                occ = occ_gen.next()
+        if occ.start.date() == date.date():
+            self.occurrence = occ
+        else:
+            raise Http404
+        self.object = self.occurrence
+        return super(OccurrenceViewMixin, self).dispatch(
+            request, *args, **kwargs)
 
-    def get_queryset(self):
+    def get_object(self):
         return self.occurrence
+
+    def get_form_kwargs(self):
+        kwargs = super(OccurrenceViewMixin, self).get_form_kwargs()
+        kwargs.update({'initial': model_to_dict(self.occurrence)})
+        return kwargs
 
 
 class OccurrenceDeleteView(OccurrenceViewMixin, DeleteView):
     """View to delete an occurrence of an event."""
-    pass
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        decision = self.request.POST.get('decision')
+        self.object.delete_period(decision)
+        return HttpResponseRedirect(self.get_success_url())
+
+    def get_context_data(self, object):
+        ctx = super(OccurrenceDeleteView, self).get_context_data()
+        ctx.update({
+            'decisions': OCCURRENCE_DECISIONS,
+            'object': self.object
+        })
+        return ctx
 
 
 class OccurrenceDetailView(OccurrenceViewMixin, DetailView):

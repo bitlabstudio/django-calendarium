@@ -178,7 +178,12 @@ class OccurrenceViewTestCaseMixin(object):
     longMessage = True
 
     def get_view_kwargs(self):
-        return {'pk': self.event.pk, 'index': 2}
+        return {
+            'pk': self.event.pk,
+            'year': self.event.start.date().year,
+            'month': self.event.start.date().month,
+            'day': self.event.start.date().day,
+        }
 
     def setUp(self):
         self.rule = RuleFactory(name='daily')
@@ -191,25 +196,23 @@ class OccurrenceViewTestCaseMixin(object):
         # regular test with a valid request
         self.is_callable()
 
-        # tests for an occurrence, that is out of range
-        kwargs = self.get_view_kwargs()
-        kwargs.update({'index': 5})
-        self.is_not_callable(kwargs=kwargs)
 
-
-class OccurrenceDeleteViewTestCase(ViewTestMixin, TestCase):
+class OccurrenceDeleteViewTestCase(
+        OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):
     """Tests for the ``OccurrenceDeleteView`` view class."""
     def get_view_name(self):
         return 'calendar_occurrence_delete'
 
 
-class OccurrenceDetailViewTestCase(ViewTestMixin, TestCase):
+class OccurrenceDetailViewTestCase(
+        OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):
     """Tests for the ``OccurrenceDetailView`` view class."""
     def get_view_name(self):
         return 'calendar_occurrence_detail'
 
 
-class OccurrenceUpdateViewTestCase(ViewTestMixin, TestCase):
+class OccurrenceUpdateViewTestCase(
+        OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):
     """Tests for the ``OccurrenceUpdateView`` view class."""
     def get_view_name(self):
         return 'calendar_occurrence_update'

@@ -35,15 +35,15 @@ urlpatterns = patterns(
         name='calendar_event_delete'),
 
     # occurrence views
-    url(r'^event/(?P<pk>\d+)/occurrence/(?P<index>\d+)/$',
+    url(r'^event/(?P<pk>\d+)/date/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$',
         OccurrenceDetailView.as_view(),
         name='calendar_occurrence_detail'),
 
-    url(r'^event/(?P<pk>\d+)/occurrence/(?P<index>\d+)/update/$',
+    url(r'^event/(?P<pk>\d+)/date/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/update/$',
         OccurrenceUpdateView.as_view(),
         name='calendar_occurrence_update'),
 
-    url(r'^event/(?P<pk>\d+)/occurrence/(?P<index>\d+)/delete/$',
+    url(r'^event/(?P<pk>\d+)/date/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/delete/$',
         OccurrenceDeleteView.as_view(),
         name='calendar_occurrence_delete'),
 
