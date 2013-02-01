@@ -7,7 +7,6 @@ FREQUENCIES = {
     'MONTHLY': 'MONTHLY',
     'WEEKLY': 'WEEKLY',
     'DAILY': 'DAILY',
-    'HOURLY': 'HOURLY',
 }
 
 
@@ -16,7 +15,6 @@ FREQUENCY_CHOICES = (
     (FREQUENCIES['MONTHLY'], _('Monthly')),
     (FREQUENCIES['WEEKLY'], _('Weekly')),
     (FREQUENCIES['DAILY'], _('Daily')),
-    (FREQUENCIES['HOURLY'], _('Hourly')),
 )
 
 
