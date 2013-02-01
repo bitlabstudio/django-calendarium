@@ -86,7 +86,7 @@ class EventFactory(EventFactoryMixin):
         # for one week, so 6 days after the current
         if self.rule:
             self.end_recurring_period = now() + timedelta(
-                hours=kwargs.get('end_recurring_period') or 0, days=6)
+                days=kwargs.get('end_recurring_period') or 6)
         else:
             self.end_recurring_period = None
         if create:
