@@ -71,4 +71,4 @@ class OccurrenceReplacer(object):
         Return persisted occurrences which are now in the period
         """
         return [occ for key, occ in self.lookup.items() if (
-            occ.start < end and occ.end >= start and not occ.cancelled)]
+            (end and occ.start < end) and occ.end >= start and not occ.cancelled)]
