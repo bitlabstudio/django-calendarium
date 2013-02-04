@@ -8,7 +8,7 @@ from calendarium.constants import (
     OCCURRENCE_DECISION_CHOICESS,
     OCCURRENCE_DECISIONS,
 )
-from calendarium.models import Occurrence
+from calendarium.models import Event, Occurrence
 
 
 class OccurrenceForm(forms.ModelForm):
@@ -28,6 +28,11 @@ class OccurrenceForm(forms.ModelForm):
 
     original_end = forms.DateTimeField(
         widget=forms.HiddenInput,
+    )
+
+    event = forms.ModelChoiceField(
+        widget=forms.HiddenInput,
+        queryset=Event.objects.all(),
     )
 
     class Meta:
