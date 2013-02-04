@@ -39,11 +39,13 @@ urlpatterns = patterns(
         OccurrenceDetailView.as_view(),
         name='calendar_occurrence_detail'),
 
-    url(r'^event/(?P<pk>\d+)/date/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/update/$',
+    url(
+        r'^event/(?P<pk>\d+)/date/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/update/$',  # NOPEP8
         OccurrenceUpdateView.as_view(),
         name='calendar_occurrence_update'),
 
-    url(r'^event/(?P<pk>\d+)/date/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/delete/$',
+    url(
+        r'^event/(?P<pk>\d+)/date/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/delete/$',  # NOPEP8
         OccurrenceDeleteView.as_view(),
         name='calendar_occurrence_delete'),
 
