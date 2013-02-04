@@ -3,14 +3,11 @@
 {% load url from future %}
 
 {% block main %}
-<h1>
-    {% trans "Delete" %} {{ object }}
-</h1>
+<h1>{% trans "Delete" %} {{ object }}</h1>
 <form method="post" action="{% url "calendar_occurrence_delete" pk=object.event.pk year=object.start.year month=object.start.month day=object.start.day %}">
     {% csrf_token %}
     <p>
-        <label for="id_event">{% trans "Decision" %}:</label> 
-        </select>
+        <label for="id_event">{% trans "Decision" %}:</label>
         <select name="decision">
             {% for decision in decisions %}
                 <option value="{{ decision }}">{{ decision }}</option>
