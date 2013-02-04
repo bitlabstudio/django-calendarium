@@ -33,10 +33,6 @@ class OccurrenceForm(forms.ModelForm):
     class Meta:
         model = Occurrence
 
-    def clean(self):
-        cleaned_data = super(OccurrenceForm, self).clean()
-        return cleaned_data
-
     def save(self):
         cleaned_data = self.cleaned_data
         if cleaned_data['decision'] == OCCURRENCE_DECISIONS['all']:
