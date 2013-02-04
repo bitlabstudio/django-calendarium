@@ -132,7 +132,6 @@ class EventUpdateViewTestCase(ViewTestMixin, TestCase):
         self.group = GroupFactory()
         self.user.groups.add(self.group)
 
-
     def test_view(self):
         self.should_be_callable_when_authenticated(self.user)
 

@@ -1,7 +1,7 @@
 """Views for the ``calendarium`` app."""
 import calendar
 
-from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.http import Http404, HttpResponseRedirect
