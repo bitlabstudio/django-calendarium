@@ -1,8 +1,10 @@
 """Factories for the models of the ``calendarium`` app."""
 import factory
 
-from django_libs.tests.factories import UserFactory
+from django.contrib.auth.models import Group, Permission
 from django.utils.timezone import timedelta
+
+from django_libs.tests.factories import UserFactory
 
 from calendarium.models import (
     Event,
@@ -13,6 +15,19 @@ from calendarium.models import (
 )
 from calendarium.tests.test_app.models import DummyModelFactory
 from calendarium.utils import now
+
+
+class GroupFactory(factory.Factory):
+    FACTORY_FOR = Group
+
+    name = factory.Sequence(lambda n: 'Test Group %s' % n)
+
+    @classmethod
+    def _prepare(cls, create, **kwargs):
+        group = super(GroupFactory, cls)._prepare(create, **kwargs)
+        group.permissions.add(Permission.objects.get(
+            codename='add_event', content_type__name='event'))
+        return group
 
 
 class EventCategoryFactory(factory.Factory):

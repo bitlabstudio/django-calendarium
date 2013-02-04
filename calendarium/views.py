@@ -1,7 +1,7 @@
 """Views for the ``calendarium`` app."""
 import calendar
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import permission_required, login_required
 from django.core.urlresolvers import reverse
 from django.forms.models import model_to_dict
 from django.http import Http404, HttpResponseRedirect
@@ -156,10 +156,8 @@ class EventMixin(object):
     """Mixin to handle event-related functions."""
     model = Event
 
-    @method_decorator(login_required)
+    @method_decorator(permission_required('calendarium.add_event'))
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_staff:
-            raise Http404
         return super(EventMixin, self).dispatch(request, *args, **kwargs)
 
 

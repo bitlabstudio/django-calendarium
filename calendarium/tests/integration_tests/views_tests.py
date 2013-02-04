@@ -9,7 +9,7 @@ from django_libs.tests.factories import UserFactory
 from django_libs.tests.mixins import ViewTestMixin
 
 from calendarium.models import Event
-from calendarium.tests.factories import EventFactory, RuleFactory
+from calendarium.tests.factories import EventFactory, GroupFactory, RuleFactory
 from calendarium.utils import now
 
 
@@ -129,11 +129,11 @@ class EventUpdateViewTestCase(ViewTestMixin, TestCase):
     def setUp(self):
         self.event = EventFactory()
         self.user = UserFactory()
+        self.group = GroupFactory()
+        self.user.groups.add(self.group)
+
 
     def test_view(self):
-        self.is_not_callable(user=self.user)
-        self.user.is_staff = True
-        self.user.save()
         self.should_be_callable_when_authenticated(self.user)
 
 
@@ -146,11 +146,10 @@ class EventCreateViewTestCase(ViewTestMixin, TestCase):
 
     def setUp(self):
         self.user = UserFactory()
+        self.group = GroupFactory()
+        self.user.groups.add(self.group)
 
     def test_view(self):
-        self.is_not_callable(user=self.user)
-        self.user.is_staff = True
-        self.user.save()
         self.should_be_callable_when_authenticated(self.user)
         self.is_callable(data={'delete': True})
         self.assertEqual(Event.objects.all().count(), 0)
