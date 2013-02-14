@@ -13,12 +13,29 @@ from dateutil import rrule
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
+from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _
 
 from calendarium.constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
 from calendarium.utils import OccurrenceReplacer
+from calendarium.widgets import ColorPickerWidget
+
+
+class ColorField(models.CharField):
+    """Custom color field to display a color picker."""
+    def __init__(self, *args, **kwargs):
+        kwargs['max_length'] = 6
+        super(ColorField, self).__init__(*args, **kwargs)
+        self.validators.append(RegexValidator(
+            regex='^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
+            message='Only RGB color model inputs allowed, like 00000',
+            code='nomatch'))
+
+    def formfield(self, **kwargs):
+        kwargs['widget'] = ColorPickerWidget
+        return super(ColorField, self).formfield(**kwargs)
 
 
 class EventModelManager(models.Manager):
@@ -234,8 +251,7 @@ class EventCategory(models.Model):
         verbose_name=_('Name'),
     )
 
-    color = models.CharField(
-        max_length=6,
+    color = ColorField(
         verbose_name=_('Color'),
     )
 
