@@ -21,6 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 from calendarium.constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
 from calendarium.utils import OccurrenceReplacer
 from calendarium.widgets import ColorPickerWidget
+from south.modelsinspector import add_introspection_rules
 
 
 class ColorField(models.CharField):
@@ -36,6 +37,9 @@ class ColorField(models.CharField):
     def formfield(self, **kwargs):
         kwargs['widget'] = ColorPickerWidget
         return super(ColorField, self).formfield(**kwargs)
+
+
+add_introspection_rules([], ["^calendarium\.models\.ColorField"])
 
 
 class EventModelManager(models.Manager):
