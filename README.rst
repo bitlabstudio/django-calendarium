@@ -1,8 +1,6 @@
 Django Calendarium
 ==================
 
-EARLY ALPHA! DO NOT USE THIS!
-
 A Django application for managing and displaying a calendar and it's events
 in your templates.
 
@@ -44,7 +42,14 @@ Run the South migrations::
 Usage
 -----
 
-TODO: Describe usage
+First think about the layout you want to integrate. In most cases you might
+want to add the calendar for the current month first. Reverse with::
+
+    {% url "calendar_current_month" %}
+
+Then use the different URLs to let the user navigate through months, weeks and
+days. The event management should be intuitive. Be sure to add ``Rule`` models,
+if you want to use occurences.
 
 
 Contribute
