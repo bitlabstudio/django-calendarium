@@ -13,6 +13,18 @@ from calendarium.tests.factories import EventFactory, GroupFactory, RuleFactory
 from calendarium.utils import now
 
 
+class CalendariumRedirectViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``CalendariumRedirectView`` view."""
+    longMessage = True
+
+    def get_view_name(self):
+        return 'calendar_current_month'
+
+    def test_view(self):
+        resp = self.client.get(self.get_url())
+        self.assertEqual(resp.status_code, 301)
+
+
 class MonthViewTestCase(ViewTestMixin, TestCase):
     """Tests for the ``MonthView`` view class."""
     longMessage = True

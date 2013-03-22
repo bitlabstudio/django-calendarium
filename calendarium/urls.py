@@ -2,6 +2,7 @@
 from django.conf.urls.defaults import patterns, url
 
 from calendarium.views import (
+    CalendariumRedirectView,
     DayView,
     EventCreateView,
     EventDeleteView,
@@ -61,4 +62,8 @@ urlpatterns = patterns(
     url(r'^(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$',
         DayView.as_view(),
         name='calendar_day'),
+
+    url(r'^$',
+        CalendariumRedirectView.as_view(),
+        name='calendar_current_month'),
 )

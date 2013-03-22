@@ -11,6 +11,7 @@ from django.views.generic import (
     CreateView,
     DeleteView,
     DetailView,
+    RedirectView,
     TemplateView,
     UpdateView,
 )
@@ -19,6 +20,13 @@ from calendarium.constants import OCCURRENCE_DECISIONS
 from calendarium.forms import OccurrenceForm
 from calendarium.models import Event, Occurrence
 from calendarium.utils import monday_of_week
+
+
+class CalendariumRedirectView(RedirectView):
+    """View to redirect to the current month view."""
+    def get_redirect_url(self, **kwargs):
+        return reverse('calendar_month', kwargs={'year': now().year,
+                                                 'month': now().month})
 
 
 class MonthView(TemplateView):
