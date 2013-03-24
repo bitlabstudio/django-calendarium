@@ -123,7 +123,7 @@ class OccurrenceFactory(EventFactoryMixin):
 
     event = factory.SubFactory(EventFactory)
     original_start = now()
-    original_end = now() + timedelta(hours=1)
+    original_end = now() + timedelta(days=1)
 
     @factory.post_generation(extract_prefix='set')
     def time_offset(self, create, extracted, **kwargs):

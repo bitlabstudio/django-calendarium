@@ -14,5 +14,5 @@ admin.autodiscover()
 urlpatterns = patterns(
     '',
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^calendarium/', include('calendarium.urls')),
+    url(r'^', include('calendarium.urls')),
 )
