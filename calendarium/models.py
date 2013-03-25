@@ -385,6 +385,12 @@ class Occurrence(EventModelMixin):
             else:
                 self.event.save()
 
+    def get_absolute_url(self):
+        return reverse(
+            'calendar_occurrence_detail', kwargs={
+                'pk': self.event.pk, 'year': self.start.year,
+                'month': self.start.month, 'day': self.start.day})
+
 
 class Rule(models.Model):
     """
