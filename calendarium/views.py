@@ -1,5 +1,6 @@
 """Views for the ``calendarium`` app."""
 import calendar
+from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
@@ -59,12 +60,21 @@ class MonthView(TemplateView):
     def get_context_data(self, **kwargs):
         month = [[]]
         week = 0
+        start = datetime(year=self.year, month=self.month, day=1, tzinfo=utc)
+        end = datetime(
+            year=self.year, month=self.month, day=1, tzinfo=utc
+        ) + relativedelta(months=1)
+
+        all_occurrences = Event.objects.get_occurrences(start, end)
         for day in calendar.Calendar().itermonthdays(self.year, self.month):
             current = False
             if day:
                 date = datetime(year=self.year, month=self.month, day=day,
                                 tzinfo=utc)
-                occurrences = Event.objects.get_occurrences(date, date)
+                occurrences = filter(
+                    lambda occ, date=date: occ.start.replace(
+                        hour=0, minute=0, second=0, microsecond=0) == date,
+                    all_occurrences)
                 if date.date() == now().date():
                     current = True
             else:
@@ -107,9 +117,15 @@ class WeekView(TemplateView):
         date = monday_of_week(self.year, self.week)
         week = []
         day = 0
+        start = date
+        end = date + relativedelta(days=7)
+        all_occurrences = Event.objects.get_occurrences(start, end)
         while day < 7:
             current = False
-            occurrences = Event.objects.get_occurrences(date, date)
+            occurrences = filter(
+                lambda occ, date=date: occ.start.replace(
+                    hour=0, minute=0, second=0, microsecond=0) == date,
+                all_occurrences)
             if date.date() == now().date():
                 current = True
             week.append((date, occurrences, current))
