@@ -61,10 +61,7 @@ class EventModelManager(models.Manager):
         # end_recurring_period.
         # For events without a rule, I fetch only the relevant ones.
         qs = self.get_query_set()
-        qs = qs.filter(start__lt=end)
-        relevant_events = qs.filter(
-            models.Q(end_recurring_period__isnull=True, end__gt=start) |
-            models.Q(end_recurring_period__isnull=False))
+        relevant_events = qs.filter(start__lt=end)
 
         # get all occurrences for those events that don't already have a
         # persistent match and that lie in this period.
