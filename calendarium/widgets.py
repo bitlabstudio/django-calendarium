@@ -14,6 +14,7 @@ class ColorPickerWidget(forms.TextInput):
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/1.2.6/jquery.min.js',
             settings.STATIC_URL + 'calendarium/js/colorpicker.js',
+            settings.STATIC_URL + 'calendarium/js/colorpicker_list.js',
             settings.STATIC_URL + 'calendarium/js/eye.js',
             settings.STATIC_URL + 'calendarium/js/layout.js',
             settings.STATIC_URL + 'calendarium/js/utils.js',

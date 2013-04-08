@@ -1,3 +1,11 @@
+.preview {
+	display: block;
+	float: left;
+	margin-right: 10px;
+	width: 20px;
+	height: 20px;
+}
+
 .colorpicker {
 	width: 356px;
 	height: 176px;
