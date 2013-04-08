@@ -213,6 +213,9 @@ class OccurrenceDeleteViewTestCase(
     def get_view_name(self):
         return 'calendar_occurrence_delete'
 
+    def test_deletion(self):
+        self.is_callable(method='post')
+
 
 class OccurrenceDetailViewTestCase(
         OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):

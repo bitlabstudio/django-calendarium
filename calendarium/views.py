@@ -259,6 +259,9 @@ class OccurrenceDeleteView(OccurrenceViewMixin, DeleteView):
         })
         return ctx
 
+    def get_success_url(self):
+        return reverse('calendar_current_month')
+
 
 class OccurrenceDetailView(OccurrenceViewMixin, DetailView):
     """View to show information of an occurrence of an event."""
