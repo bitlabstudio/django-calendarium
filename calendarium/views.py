@@ -17,10 +17,32 @@ from django.views.generic import (
     UpdateView,
 )
 
-from calendarium.constants import OCCURRENCE_DECISIONS
-from calendarium.forms import OccurrenceForm
-from calendarium.models import Event, Occurrence
-from calendarium.utils import monday_of_week
+from .constants import OCCURRENCE_DECISIONS
+from .forms import OccurrenceForm
+from .models import EventCategory, Event, Occurrence
+from .utils import monday_of_week
+
+
+class CategoryMixin(object):
+    """Mixin to handle category filtering."""
+    def dispatch(self, request, *args, **kwargs):
+        if request.GET.get('category'):
+            try:
+                category_id = int(request.GET.get('category'))
+            except ValueError:
+                pass
+            else:
+                try:
+                    self.category = EventCategory.objects.get(pk=category_id)
+                except EventCategory.DoesNotExist:
+                    pass
+        return super(CategoryMixin, self).dispatch(request, *args, **kwargs)
+
+    def get_category_context(self, **kwargs):
+        context = {'categories': EventCategory.objects.all()}
+        if hasattr(self, 'category'):
+            context.update({'current_category': self.category})
+        return context
 
 
 class CalendariumRedirectView(RedirectView):
@@ -30,7 +52,7 @@ class CalendariumRedirectView(RedirectView):
                                                  'month': now().month})
 
 
-class MonthView(TemplateView):
+class MonthView(CategoryMixin, TemplateView):
     """View to return all occurrences of an event for a whole month."""
     template_name = 'calendarium/calendar_month.html'
 
@@ -58,6 +80,7 @@ class MonthView(TemplateView):
         return super(MonthView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        ctx = self.get_category_context()
         month = [[]]
         week = 0
         start = datetime(year=self.year, month=self.month, day=1, tzinfo=utc)
@@ -65,7 +88,8 @@ class MonthView(TemplateView):
             year=self.year, month=self.month, day=1, tzinfo=utc
         ) + relativedelta(months=1)
 
-        all_occurrences = Event.objects.get_occurrences(start, end)
+        all_occurrences = Event.objects.get_occurrences(
+            start, end, ctx.get('current_category'))
         for day in calendar.Calendar().itermonthdays(self.year, self.month):
             current = False
             if day:
@@ -83,11 +107,11 @@ class MonthView(TemplateView):
             if len(month[week]) == 7:
                 month.append([])
                 week += 1
-        ctx = {'month': month, 'date': date}
+        ctx.update({'month': month, 'date': date})
         return ctx
 
 
-class WeekView(TemplateView):
+class WeekView(CategoryMixin, TemplateView):
     """View to return all occurrences of an event for one week."""
     template_name = 'calendarium/calendar_week.html'
 
@@ -114,12 +138,14 @@ class WeekView(TemplateView):
         return super(WeekView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        ctx = self.get_category_context()
         date = monday_of_week(self.year, self.week)
         week = []
         day = 0
         start = date
         end = date + relativedelta(days=7)
-        all_occurrences = Event.objects.get_occurrences(start, end)
+        all_occurrences = Event.objects.get_occurrences(
+            start, end, ctx.get('current_category'))
         while day < 7:
             current = False
             occurrences = filter(
@@ -131,11 +157,11 @@ class WeekView(TemplateView):
             week.append((date, occurrences, current))
             day += 1
             date = date + timedelta(days=1)
-        ctx = {'week': week, 'date': date, 'week_nr': self.week}
+        ctx.update({'week': week, 'date': date, 'week_nr': self.week})
         return ctx
 
 
-class DayView(TemplateView):
+class DayView(CategoryMixin, TemplateView):
     """View to return all occurrences of an event for one day."""
     template_name = 'calendarium/calendar_day.html'
 
@@ -166,8 +192,10 @@ class DayView(TemplateView):
         return super(DayView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        occurrences = Event.objects.get_occurrences(self.date, self.date)
-        ctx = {'date': self.date, 'occurrences': occurrences}
+        ctx = self.get_category_context()
+        occurrences = Event.objects.get_occurrences(
+            self.date, self.date, ctx.get('current_category'))
+        ctx.update({'date': self.date, 'occurrences': occurrences})
         return ctx
 
 

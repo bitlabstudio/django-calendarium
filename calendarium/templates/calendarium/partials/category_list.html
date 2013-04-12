@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load url from future %}
+<ul>
+    <li>{% if not current_category %}<strong>{% endif %}<a href=".">{% trans "All events" %}</a>{% if not current_category %}</strong>{% endif %}</li>
+    {% for category in categories %}
+        <li>{% if category == current_category %}<strong>{% endif %}<a href=".?category={{ category.pk }}">{{ category.name }}</a>{% if category == current_category %}</strong>{% endif %}</li>
+    {% endfor %}
+</ul>

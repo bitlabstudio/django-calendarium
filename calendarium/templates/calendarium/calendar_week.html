@@ -4,6 +4,7 @@
 
 {% block main %}
 <h1>{% trans "Occurrences" %}</h1>
+{% include "calendarium/partials/category_list.html" %}
 <form action="." method="post">
     {% csrf_token %}
     <input type="submit" name="previous" value="{% trans "Previous" %}" />

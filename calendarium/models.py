@@ -44,7 +44,7 @@ add_introspection_rules([], ["^calendarium\.models\.ColorField"])
 
 class EventModelManager(models.Manager):
     """Custom manager for the ``Event`` model class."""
-    def get_occurrences(self, start, end):
+    def get_occurrences(self, start, end, category=None):
         """Returns a list of events and occurrences for the given period."""
         # we always want the time of start and end to be at 00:00
         start = start.replace(minute=0, hour=0)
@@ -61,8 +61,10 @@ class EventModelManager(models.Manager):
         # end_recurring_period.
         # For events without a rule, I fetch only the relevant ones.
         qs = self.get_query_set()
-        relevant_events = qs.filter(start__lt=end)
-
+        if category:
+            relevant_events = qs.filter(start__lt=end, category=category)
+        else:
+            relevant_events = qs.filter(start__lt=end)
         # get all occurrences for those events that don't already have a
         # persistent match and that lie in this period.
         all_occurrences = []

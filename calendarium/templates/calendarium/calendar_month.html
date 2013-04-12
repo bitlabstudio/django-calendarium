@@ -4,6 +4,7 @@
 
 {% block main %}
 <h1>{{ date|date:"F Y" }}</h1>
+{% include "calendarium/partials/category_list.html" %}
 <form action="." method="post">
     {% csrf_token %}
     <input type="submit" name="previous" value="{% trans "Previous" %}" />
@@ -42,4 +43,5 @@
         {% endif %}
     {% endfor %}
 </table>
+{% render_upcoming_events 5 current_category %}
 {% endblock %}

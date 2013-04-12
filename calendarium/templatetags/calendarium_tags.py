@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django import template
 from django.utils.timezone import datetime, now, timedelta, utc
 
-from ..models import Event
+from ..models import Event, EventCategory
 
 register = template.Library()
 
@@ -25,7 +25,14 @@ def get_week_URL(date, day=0):
 
 
 @register.inclusion_tag('calendarium/upcoming_events.html')
-def render_upcoming_events(event_amount=5):
+def render_upcoming_events(event_amount=5, category=None):
     """Template tag to render a list of upcoming events."""
-    return {'occurrences': Event.objects.get_occurrences(
-        now(), now() + timedelta(days=100))[:event_amount]}
+    if not isinstance(category, EventCategory):
+        category = None
+    return {
+        'occurrences': Event.objects.get_occurrences(
+            now(),
+            now() + timedelta(days=100),
+            category,
+        )[:event_amount]
+    }

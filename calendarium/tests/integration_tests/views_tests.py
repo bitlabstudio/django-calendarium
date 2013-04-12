@@ -9,7 +9,12 @@ from django_libs.tests.factories import UserFactory
 from django_libs.tests.mixins import ViewTestMixin
 
 from calendarium.models import Event
-from calendarium.tests.factories import EventFactory, GroupFactory, RuleFactory
+from ..factories import (
+    EventFactory,
+    EventCategoryFactory,
+    GroupFactory,
+    RuleFactory,
+)
 from calendarium.utils import now
 
 
@@ -56,6 +61,20 @@ class MonthViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/partials/calendar_month.html',
             msg=('Returned the wrong template for AJAX request.'))
+
+        # called with a invalid category pk
+        resp = self.client.get('{0}?category=abc'.format(self.get_url()))
+        self.assertEqual(resp.status_code, 200)
+
+        # called with a non-existant category pk
+        resp = self.client.get('{0}?category=999'.format(self.get_url()))
+        self.assertEqual(resp.status_code, 200)
+
+        # called with a category pk
+        category = EventCategoryFactory()
+        resp = self.client.get('{0}?category={1}'.format(self.get_url(),
+                                                         category.id))
+        self.assertEqual(resp.status_code, 200)
 
         # called with wrong values
         self.is_not_callable(kwargs={'year': 2000, 'month': 15})
