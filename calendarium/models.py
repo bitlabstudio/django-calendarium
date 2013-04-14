@@ -126,6 +126,7 @@ class Event(EventModelMixin):
         'auth.User',
         verbose_name=_('Created by'),
         related_name='events',
+        blank=True, null=True,
     )
 
     category = models.ForeignKey(
