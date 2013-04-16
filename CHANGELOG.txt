@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 0.2 ===
+
 - Added render_upcoming_events template tag.
 - Made created_by optional
 
