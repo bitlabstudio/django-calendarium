@@ -321,6 +321,7 @@ class Occurrence(EventModelMixin):
         'auth.User',
         verbose_name=_('Created by'),
         related_name='occurrences',
+        blank=True, null=True,
     )
 
     event = models.ForeignKey(

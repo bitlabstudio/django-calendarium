@@ -4,8 +4,6 @@ import factory
 from django.contrib.auth.models import Group, Permission
 from django.utils.timezone import timedelta
 
-from django_libs.tests.factories import UserFactory
-
 from calendarium.models import (
     Event,
     EventCategory,
@@ -46,7 +44,6 @@ class EventFactoryMixin(factory.Factory):
     end = now() + timedelta(hours=1)
     title = factory.Sequence(lambda n: 'title{0}'.format(n))
     description = factory.Sequence(lambda n: 'description{0}'.format(n))
-    created_by = factory.SubFactory(UserFactory)
     creation_date = now()
 
 

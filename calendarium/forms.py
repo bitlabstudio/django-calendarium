@@ -96,7 +96,8 @@ class OccurrenceForm(forms.ModelForm):
             new_event.id = None
             event_kwargs = model_to_dict(self.instance)
             for field_name in [field.name for field in new_event._meta.fields]:
-                if field_name == 'created_by':
+                if (field_name == 'created_by'
+                        and event_kwargs.get('created_by')):
                     value = User.objects.get(pk=event_kwargs.get(field_name))
                 elif field_name in ['rule', 'category']:
                     continue
