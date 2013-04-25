@@ -1,6 +1,10 @@
 import os
 from setuptools import setup, find_packages
 import calendarium
+try:
+    import multiprocessing
+except ImportError:
+    pass
 
 
 def read(fname):
@@ -23,9 +27,15 @@ setup(
     url="https://github.com/bitmazk/django-calendarium",
     packages=find_packages(),
     include_package_data=True,
+    install_requires=[
+        'django>=1.4.3',
+        'South',
+        'python-dateutil',
+    ],
     tests_require=[
         'fabric',
-        'factory_boy',
+        'factory_boy<2.0.0',
+        'django_libs',
         'django-nose',
         'coverage',
         'django-coverage',
