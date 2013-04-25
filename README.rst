@@ -71,7 +71,7 @@ If you want to contribute to this project, please perform the following steps::
     # Clone your fork
     $ mkvirtualenv -p python2.7 django-calendarium
     $ pip install -r requirements.txt
-    $ ./logger/tests/runtests.sh
+    $ ./calendarium/tests/runtests.py
     # You should get no failing tests
 
     $ git co -b feature_branch master
