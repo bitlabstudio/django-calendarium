@@ -25,7 +25,7 @@ setup(
     include_package_data=True,
     tests_require=[
         'fabric',
-        'factory_boy',
+        'factory_boy<2.0.0',
         'django-nose',
         'coverage',
         'django-coverage',
