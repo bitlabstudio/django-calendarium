@@ -1,6 +1,10 @@
 import os
 from setuptools import setup, find_packages
 import calendarium
+try:
+    import multiprocessing
+except ImportError:
+    pass
 
 
 def read(fname):
