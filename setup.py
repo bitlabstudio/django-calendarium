@@ -23,6 +23,11 @@ setup(
     url="https://github.com/bitmazk/django-calendarium",
     packages=find_packages(),
     include_package_data=True,
+    install_requires=[
+        'django>=1.4.3',
+        'South',
+        'python-dateutil',
+    ],
     tests_require=[
         'fabric',
         'factory_boy<2.0.0',
