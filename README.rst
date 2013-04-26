@@ -81,8 +81,8 @@ If you want to contribute to this project, please perform the following steps::
     # Send us a pull request for your feature branch
 
 Whenever you run the tests a coverage output will be generated in
-``tests/coverage/index.html``. When adding new features, please make sure that
-you keep the coverage at 100%.
+``calendarium/tests/coverage/index.html``. When adding new features, please
+make sure that you keep the coverage at 100%.
 
 
 Roadmap
