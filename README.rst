@@ -73,7 +73,7 @@ If you want to contribute to this project, please perform the following steps::
     $ python setup.py test
     # You should get no failing tests
 
-    $ git co -b feature_branch master
+    $ git checkout -b feature_branch master
     # Implement your feature and tests
     # Describe your change in the CHANGELOG.txt
     $ git add . && git commit
