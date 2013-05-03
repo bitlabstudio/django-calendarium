@@ -20,3 +20,14 @@ If you want to contribute to this project, please perform the following steps::
 Whenever you run the tests a coverage output will be generated in
 ``calendarium/tests/coverage/index.html``. When adding new features, please
 make sure that you keep the coverage at 100%.
+
+
+Updating the documentation
+--------------------------
+
+In order to update the documentation, just edit the ``.rst`` files in
+``docs/source``. If you would like to see your changes in the browser, run
+``make html`` in ``docs``.
+
+Check out the `reStructuredText Primer <http://sphinx-doc.org/rest.html>`_ for
+more information on the concepts and syntax.
