@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 0.2.1 ===
+
 - Added sphinx docs, hosted on readthedocs (https://django-calendarium.readthedocs.org)
 
 === 0.2 ===
