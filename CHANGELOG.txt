@@ -1,5 +1,7 @@
 === ongoing ===
 
+- Added sphinx docs, hosted on readthedocs (https://django-calendarium.readthedocs.org)
+
 === 0.2 ===
 
 - Added render_upcoming_events template tag.
