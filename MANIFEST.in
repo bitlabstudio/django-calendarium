@@ -4,6 +4,9 @@ include DESCRIPTION
 include CHANGELOG.txt
 include README.md
 graft calendarium
+graft docs
+graft docs/source
 global-exclude *.orig *.pyc *.log
-prune calendarium/tests/coverage/
-prune calendarium/.ropeproject/
+prune docs/build
+prune calendarium/tests/coverage
+prune calendarium/.ropeproject
