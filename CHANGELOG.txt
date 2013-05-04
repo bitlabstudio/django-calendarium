@@ -1,5 +1,9 @@
 === ongoing ===
 
+- Made category field on Event model optional (backwards incompatible
+  migration)
+- Improved Event admin
+
 === 0.2.1 ===
 
 - Added sphinx docs, hosted on readthedocs (https://django-calendarium.readthedocs.org)

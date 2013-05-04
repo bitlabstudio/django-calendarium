@@ -133,6 +133,7 @@ class Event(EventModelMixin):
         'EventCategory',
         verbose_name=_('Category'),
         related_name='events',
+        null=True, blank=True,
     )
 
     rule = models.ForeignKey(
