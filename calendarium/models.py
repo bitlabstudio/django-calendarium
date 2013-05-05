@@ -225,9 +225,6 @@ class Event(EventModelMixin):
                 # if the persistent occ falls into the period, replace it
                 if (end and p_occ.start < end) and p_occ.end >= start:
                     estimated_occ = p_occ
-                else:
-                    occ = occurrence_gen.next()
-                    continue
             else:
                 # if there is no persistent match, use the original occ
                 estimated_occ = occ
@@ -359,7 +356,7 @@ class Occurrence(EventModelMixin):
         is_only = False
         gen = self.event.get_occurrences(
             self.start, self.event.end_recurring_period)
-        occs = [occ for occ in gen]
+        occs = list(set([occ for occ in gen]))
         if len(occs) == 1:
             is_only = True
         elif len(occs) > 1 and self == occs[-1]:

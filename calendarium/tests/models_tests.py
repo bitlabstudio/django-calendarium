@@ -8,9 +8,10 @@ from calendarium.models import (
     Occurrence,
     Rule,
 )
-from calendarium.models import Event
+from calendarium.models import Event, ColorField
 from calendarium.tests.factories import EventFactory, OccurrenceFactory
 from calendarium.utils import now
+from calendarium.widgets import ColorPickerWidget
 
 
 class EventModelManagerTestCase(TestCase):
@@ -97,6 +98,18 @@ class EventCategoryTestCase(TestCase):
         self.assertTrue(event_category)
 
 
+class ColorFieldTestCase(TestCase):
+    """Tests for the ``ColorField`` model."""
+    longMessage = True
+
+    def test_functions(self):
+        color_field = ColorField()
+        color_field.formfield
+        self.assertIsInstance(
+            color_field.formfield().widget, ColorPickerWidget, msg=(
+                'Should add the color field widget.'))
+
+
 class EventRelationTestCase(TestCase):
     """Tests for the ``EventRelation`` model."""
     longMessage = True
@@ -115,6 +128,45 @@ class OccurrenceTestCase(TestCase):
         """Test for instantiation of the ``Occurrence`` model."""
         occurrence = Occurrence()
         self.assertTrue(occurrence)
+
+    def test_delete_period(self):
+        """Test for the ``delete_period`` function."""
+        occurrence = OccurrenceFactory()
+        occurrence.delete_period('all')
+        self.assertEqual(Occurrence.objects.all().count(), 0, msg=(
+            'Should delete only the first occurrence.'))
+
+        event = EventFactory(set__start=0, set__end=0)
+        occurrence = OccurrenceFactory(event=event, set__start=0, set__end=0)
+        occurrence.delete_period('this one')
+        self.assertEqual(Occurrence.objects.all().count(), 0, msg=(
+            'Should delete only the first occurrence.'))
+
+        event = EventFactory(set__start=0, set__end=0)
+        occurrence = OccurrenceFactory(event=event, set__start=0, set__end=0)
+        occurrence.delete_period('following')
+        self.assertEqual(Event.objects.all().count(), 0, msg=(
+            'Should delete the event and the occurrence.'))
+
+        occurrence_1 = OccurrenceFactory()
+        occurrence_2 = OccurrenceFactory(event=occurrence_1.event)
+        period = occurrence_2.event.end_recurring_period
+        occurrence_2.delete_period('this one')
+        self.assertGreater(period, occurrence_2.event.end_recurring_period,
+                           msg=('Should shorten event period, if last'
+                                ' occurencce is deleted.'))
+
+        occurrence_2 = OccurrenceFactory(event=occurrence_1.event)
+        occurrence_3 = OccurrenceFactory(event=occurrence_1.event)
+        period = occurrence_2.event.end_recurring_period
+        occurrence_2.delete_period('this one')
+        self.assertTrue(Occurrence.objects.get(pk=occurrence_2.pk).cancelled,
+                        msg=('Should set the occurrence to cancelled.'))
+
+        period = occurrence_3.event.end_recurring_period
+        occurrence_3.delete_period('following')
+        self.assertEqual(Occurrence.objects.all().count(), 0, msg=(
+            'Should delete all occurrences with this start date.'))
 
 
 class RuleTestCase(TestCase):

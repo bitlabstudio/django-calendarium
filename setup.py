@@ -2,7 +2,7 @@ import os
 from setuptools import setup, find_packages
 import calendarium
 try:
-    import multiprocessing
+    import multiprocessing  # NOQA
 except ImportError:
     pass
 
