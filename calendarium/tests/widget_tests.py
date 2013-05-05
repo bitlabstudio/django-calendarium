@@ -1,5 +1,4 @@
 """Tests for the widgets of the ``calendarium`` app."""
-from django.template import Context, Template
 from django.test import TestCase
 
 from ..widgets import ColorPickerWidget
