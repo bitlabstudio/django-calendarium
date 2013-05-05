@@ -235,6 +235,27 @@ class OccurrenceDeleteViewTestCase(
     def test_deletion(self):
         self.is_callable(method='post')
 
+        self.is_callable(kwargs={
+            'pk': self.event.pk,
+            'year': self.event.start.date().year,
+            'month': self.event.start.date().month,
+            'day': self.event.start.date().day + 1,
+        }, message=('Should be callable, if date in period.'))
+
+        self.is_not_callable(kwargs={
+            'pk': 5,
+            'year': self.event.start.date().year,
+            'month': self.event.start.date().month,
+            'day': self.event.start.date().day,
+        }, message=('Wrong event pk.'))
+
+        self.is_not_callable(kwargs={
+            'pk': self.event.pk,
+            'year': self.event.start.date().year,
+            'month': '999',
+            'day': self.event.start.date().day,
+        }, message=('Wrong dates.'))
+
 
 class OccurrenceDetailViewTestCase(
         OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):

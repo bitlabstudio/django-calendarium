@@ -242,7 +242,7 @@ class OccurrenceViewMixin(object):
         day = int(kwargs.get('day'))
         try:
             date = datetime(year, month, day, tzinfo=utc)
-        except TypeError:
+        except (TypeError, ValueError):
             raise Http404
         # this should retrieve the one single occurrence, that has a
         # matching start date
@@ -254,20 +254,16 @@ class OccurrenceViewMixin(object):
             occ = occ_gen.next()
             while occ.start.date() < date.date():
                 occ = occ_gen.next()
-        if occ.start.date() == date.date():
-            self.occurrence = occ
-        else:
-            raise Http404
-        self.object = self.occurrence
+        self.object = occ
         return super(OccurrenceViewMixin, self).dispatch(
             request, *args, **kwargs)
 
     def get_object(self):
-        return self.occurrence
+        return self.object
 
     def get_form_kwargs(self):
         kwargs = super(OccurrenceViewMixin, self).get_form_kwargs()
-        kwargs.update({'initial': model_to_dict(self.occurrence)})
+        kwargs.update({'initial': model_to_dict(self.object)})
         return kwargs
 
 
