@@ -5,6 +5,8 @@ from django.forms.models import model_to_dict
 from django.test import TestCase
 from django.utils.timezone import timedelta
 
+from django_libs.tests.factories import UserFactory
+
 from calendarium.constants import FREQUENCIES, OCCURRENCE_DECISIONS
 from calendarium.forms import OccurrenceForm
 from calendarium.models import Event, Occurrence
@@ -28,11 +30,13 @@ class OccurrenceFormTestCase(TestCase):
             params=json.dumps({'byweekday': 0}))
         self.rec_event = EventFactory(
             rule=self.rule, start=now(),
-            set__end_recurring_period=41)
+            set__end_recurring_period=41,
+            created_by=UserFactory(),
+        )
         self.rec_occurrence_list = [
             occ for occ in self.rec_event.get_occurrences(
                 self.rec_event.start, self.rec_event.end_recurring_period)]
-        self.rec_occurrence = self.rec_occurrence_list[2]
+        self.rec_occurrence = self.rec_occurrence_list[1]
 
     def test_form(self):
         """Test if ``OccurrenceForm`` is valid and saves correctly."""
@@ -103,7 +107,7 @@ class OccurrenceFormTestCase(TestCase):
         occ_to_use = self.rec_occurrence_list[4]
         data = model_to_dict(occ_to_use)
         initial = data.copy()
-        new_start = occ_to_use.start + timedelta(days=1)
+        new_start = occ_to_use.start - timedelta(days=1)
         data.update({
             'decision': OCCURRENCE_DECISIONS['following'],
             'start': new_start})

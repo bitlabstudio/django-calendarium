@@ -106,23 +106,3 @@ class OccurrenceForm(forms.ModelForm):
                 if value:
                     setattr(new_event, field_name, value)
             new_event.save()
-
-            # update the new event and update all of the corresponding occs
-            for occ in self.instance.event.occurrences.filter(
-                    start__gte=self.instance.start):
-                occ.event = new_event
-                for field_name in [field.name for field in occ._meta.fields]:
-                    value = changes.get(field_name)
-                    if value:
-                        # since we can't just set a new datetime, we have to
-                        # adjust the datetime fields according to the changes
-                        # on the occurrence form instance
-                        if type(value) != datetime:
-                            setattr(occ, field_name, value)
-                        else:
-                            initial_time = self.initial.get(field_name)
-                            occ_time = getattr(occ, field_name)
-                            delta = value - initial_time
-                            new_time = occ_time + delta
-                            setattr(occ, field_name, new_time)
-                occ.save()
