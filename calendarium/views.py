@@ -254,6 +254,10 @@ class OccurrenceViewMixin(object):
             occ = occ_gen.next()
             while occ.start.date() < date.date():
                 occ = occ_gen.next()
+        if occ.start.date() == date.date():
+            self.occurrence = occ
+        else:
+            raise Http404
         self.object = occ
         return super(OccurrenceViewMixin, self).dispatch(
             request, *args, **kwargs)

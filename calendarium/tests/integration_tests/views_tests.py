@@ -256,6 +256,20 @@ class OccurrenceDeleteViewTestCase(
             'day': self.event.start.date().day,
         }, message=('Wrong dates.'))
 
+        new_rule = RuleFactory(name='weekly', frequency='WEEKLY')
+        new_event = EventFactory(
+            rule=new_rule,
+            end_recurring_period=now() + timedelta(days=200),
+            set__start=-5,
+        )
+        test_date = self.event.start.date() - timedelta(days=1)
+        self.is_not_callable(kwargs={
+            'pk': new_event.pk,
+            'year': test_date.year,
+            'month': test_date.month,
+            'day': test_date.day,
+        }, message=('No occurrence available for this day.'))
+
 
 class OccurrenceDetailViewTestCase(
         OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):
