@@ -12,6 +12,7 @@ from calendarium.views import (
     OccurrenceDeleteView,
     OccurrenceDetailView,
     OccurrenceUpdateView,
+    UpcomingEventsAjaxView,
     WeekView,
 )
 
@@ -63,7 +64,12 @@ urlpatterns = patterns(
         DayView.as_view(),
         name='calendar_day'),
 
+    url(r'^get-events/$',
+        UpcomingEventsAjaxView.as_view(),
+        name='calendar_upcoming_events'),
+
     url(r'^$',
         CalendariumRedirectView.as_view(),
         name='calendar_current_month'),
+
 )

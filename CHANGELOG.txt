@@ -1,5 +1,8 @@
 === ongoing ===
 
+- Added UpcomingEventsAjaxView
+- Added slug and parent fields to EventCategory model
+
 === 0.3 ===
 
 - Made category field on Event model optional (backwards incompatible

@@ -12,6 +12,7 @@ from django.views.generic import (
     CreateView,
     DeleteView,
     DetailView,
+    ListView,
     RedirectView,
     TemplateView,
     UpdateView,
@@ -299,3 +300,38 @@ class OccurrenceDetailView(OccurrenceViewMixin, DetailView):
 class OccurrenceUpdateView(OccurrenceViewMixin, UpdateView):
     """View to edit an occurrence of an event."""
     pass
+
+
+class UpcomingEventsAjaxView(CategoryMixin, ListView):
+    template_name = 'calendarium/partials/upcoming_events.html'
+    context_object_name = 'occurrences'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.GET.get('category'):
+            self.category = EventCategory.objects.get(
+                slug=request.GET.get('category'))
+        else:
+            self.category = None
+        if request.GET.get('count'):
+            self.count = int(request.GET.get('count'))
+        else:
+            self.count = None
+        return super(UpcomingEventsAjaxView, self).dispatch(
+            request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super(UpcomingEventsAjaxView, self).get_context_data(**kwargs)
+        ctx.update(self.get_category_context(**kwargs))
+        return ctx
+
+    def get_queryset(self):
+        qs_kwargs = {
+            'start': now(),
+            'end': now() + timedelta(365),
+        }
+        if self.category:
+            qs_kwargs.update({'category': self.category, })
+        qs = Event.objects.get_occurrences(**qs_kwargs)
+        if self.count:
+            return qs[:self.count]
+        return qs

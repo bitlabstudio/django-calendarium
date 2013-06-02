@@ -283,3 +283,25 @@ class OccurrenceUpdateViewTestCase(
     """Tests for the ``OccurrenceUpdateView`` view class."""
     def get_view_name(self):
         return 'calendar_occurrence_update'
+
+
+class UpcomingEventsAjaxViewTestCase(ViewTestMixin, TestCase):
+    """Tests for the ``UpcomingEventsAjaxView`` view class."""
+    def get_view_name(self):
+        return 'calendar_upcoming_events'
+
+    def test_view(self):
+        self.should_be_callable_when_anonymous()
+
+    def test_view_with_count(self):
+        url = self.get_url()
+        url = url + '?count=5'
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_view_with_category(self):
+        cat = EventCategoryFactory()
+        url = self.get_url()
+        url = url + '?category={0}'.format(cat.slug)
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)

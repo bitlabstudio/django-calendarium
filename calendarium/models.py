@@ -15,6 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _
 
@@ -247,18 +248,44 @@ class Event(EventModelMixin):
 
 
 class EventCategory(models.Model):
-    """The category of an event."""
+    """
+    The category of an event.
+
+    :name: The name of the category.
+    :slug: The slug of the category.
+    :color: The color of the category.
+    :parent: Allows you to create hierarchies of event categories.
+
+    """
     name = models.CharField(
         max_length=256,
         verbose_name=_('Name'),
+    )
+
+    slug = models.SlugField(
+        max_length=256,
+        verbose_name=_('Slug'),
+        blank=True,
     )
 
     color = ColorField(
         verbose_name=_('Color'),
     )
 
+    parent = models.ForeignKey(
+        'calendarium.EventCategory',
+        verbose_name=_('Parent'),
+        related_name='parents',
+        null=True, blank=True,
+    )
+
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        return super(EventCategory, self).save(*args, **kwargs)
 
 
 class EventRelation(models.Model):

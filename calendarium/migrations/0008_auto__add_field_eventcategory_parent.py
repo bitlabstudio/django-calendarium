@@ -9,14 +9,16 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding field 'EventCategory.parent'
+        db.add_column('calendarium_eventcategory', 'parent',
+                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='parents', null=True, to=orm['calendarium.EventCategory']),
+                      keep_default=False)
 
-        # Changing field 'Event.category'
-        db.alter_column('calendarium_event', 'category_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['calendarium.EventCategory']))
 
     def backwards(self, orm):
+        # Deleting field 'EventCategory.parent'
+        db.delete_column('calendarium_eventcategory', 'parent_id')
 
-        # User chose to not deal with backwards NULL issues for 'Event.category'
-        raise RuntimeError("Cannot reverse this migration. 'Event.category' and its values cannot be restored.")
 
     models = {
         'auth.group': {
@@ -65,7 +67,8 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'EventCategory'},
             'color': ('calendarium.models.ColorField', [], {'max_length': '6'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '256'})
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '256'}),
+            'parent': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'parents'", 'null': 'True', 'to': "orm['calendarium.EventCategory']"})
         },
         'calendarium.eventrelation': {
             'Meta': {'object_name': 'EventRelation'},
