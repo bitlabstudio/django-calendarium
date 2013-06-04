@@ -322,6 +322,7 @@ class UpcomingEventsAjaxView(CategoryMixin, ListView):
     def get_context_data(self, **kwargs):
         ctx = super(UpcomingEventsAjaxView, self).get_context_data(**kwargs)
         ctx.update(self.get_category_context(**kwargs))
+        ctx.update({'show_excerpt': True, })
         return ctx
 
     def get_queryset(self):

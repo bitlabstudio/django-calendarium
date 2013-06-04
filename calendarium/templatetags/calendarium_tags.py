@@ -24,15 +24,23 @@ def get_week_URL(date, day=0):
                                             'week': date.isocalendar()[1]})
 
 
+def _get_upcoming_events(amount=5, category=None):
+    if not isinstance(category, EventCategory):
+        category = None
+    return Event.objects.get_occurrences(
+        now(), now() + timedelta(days=356), category)[:amount]
+
+
 @register.inclusion_tag('calendarium/upcoming_events.html')
 def render_upcoming_events(event_amount=5, category=None):
     """Template tag to render a list of upcoming events."""
-    if not isinstance(category, EventCategory):
-        category = None
     return {
-        'occurrences': Event.objects.get_occurrences(
-            now(),
-            now() + timedelta(days=100),
-            category,
-        )[:event_amount]
+        'occurrences': _get_upcoming_events(
+            amount=event_amount, category=category),
     }
+
+
+@register.assignment_tag
+def get_upcoming_events(amount=5, category=None):
+    """Returns a list of upcoming events."""
+    return _get_upcoming_events(amount=amount, category=category)
