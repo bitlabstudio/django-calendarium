@@ -22,6 +22,7 @@ from django.utils.translation import ugettext_lazy as _
 from calendarium.constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
 from calendarium.utils import OccurrenceReplacer
 from calendarium.widgets import ColorPickerWidget
+from filer.fields.image import FilerImageField
 from south.modelsinspector import add_introspection_rules
 
 
@@ -120,6 +121,7 @@ class Event(EventModelMixin):
     :rule: FK to the definition of the recurrence of an event.
     :end_recurring_period: The possible end of the recurring definition.
     :title: The title of the event.
+    :image: Optional image of the event.
 
     """
 
@@ -151,6 +153,11 @@ class Event(EventModelMixin):
     title = models.CharField(
         max_length=256,
         verbose_name=_('Title'),
+    )
+
+    image = FilerImageField(
+        verbose_name=_('Image'),
+        null=True, blank=True,
     )
 
     objects = EventModelManager()

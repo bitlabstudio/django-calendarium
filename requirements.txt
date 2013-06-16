@@ -6,7 +6,8 @@
 django==1.4.3
 South==0.7.6
 python-dateutil==2.1
-
+django-filer==0.9.4
+Pillow==2.0.0
 
 # ==============================================================
 # Packages needed for running the tests. Needed by contributors.
