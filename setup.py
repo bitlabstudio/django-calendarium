@@ -31,6 +31,7 @@ setup(
         'django>=1.4.3',
         'South',
         'python-dateutil',
+        'django-filer',
     ],
     tests_require=[
         'fabric',

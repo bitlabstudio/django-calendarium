@@ -3,6 +3,7 @@
 - Added UpcomingEventsAjaxView
 - Added slug and parent fields to EventCategory model
 - Added assignment tag `get_upcoming_events`
+- Added FilerImageField
 
 === 0.3 ===
 
