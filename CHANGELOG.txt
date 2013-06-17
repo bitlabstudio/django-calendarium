@@ -1,5 +1,7 @@
 === ongoing ===
 
+- Taking parent category into consideration when filtering for occurrences
+
 === 0.4 ===
 
 - Added UpcomingEventsAjaxView

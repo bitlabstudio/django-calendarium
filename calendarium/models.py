@@ -15,6 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
 from django.db import models
+from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _
@@ -64,7 +65,11 @@ class EventModelManager(models.Manager):
         # For events without a rule, I fetch only the relevant ones.
         qs = self.get_query_set()
         if category:
-            relevant_events = qs.filter(start__lt=end, category=category)
+            qs = qs.filter(start__lt=end)
+            relevant_events = qs.filter(
+                Q(category__slug=category) |
+                Q(category__parent__slug=category)
+            )
         else:
             relevant_events = qs.filter(start__lt=end)
         # get all occurrences for those events that don't already have a
