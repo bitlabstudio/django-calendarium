@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 0.4 ===
+
 - Added UpcomingEventsAjaxView
 - Added slug and parent fields to EventCategory model
 - Added assignment tag `get_upcoming_events`
