@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 0.4.1 ===
+
 - Taking parent category into consideration when filtering for occurrences
 
 === 0.4 ===
