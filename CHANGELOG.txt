@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 0.4.2 ===
+
 - Added CategorySlugMixin for views that should filter by category.
 - Fixed a bug with the category filtering.
 
