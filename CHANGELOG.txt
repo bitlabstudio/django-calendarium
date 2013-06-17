@@ -1,5 +1,8 @@
 === ongoing ===
 
+- Added CategorySlugMixin for views that should filter by category.
+- Fixed a bug with the category filtering.
+
 === 0.4.1 ===
 
 - Taking parent category into consideration when filtering for occurrences

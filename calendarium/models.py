@@ -67,8 +67,8 @@ class EventModelManager(models.Manager):
         if category:
             qs = qs.filter(start__lt=end)
             relevant_events = qs.filter(
-                Q(category__slug=category) |
-                Q(category__parent__slug=category)
+                Q(category=category) |
+                Q(category__parent=category)
             )
         else:
             relevant_events = qs.filter(start__lt=end)
