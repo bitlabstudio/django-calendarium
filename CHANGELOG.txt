@@ -1,5 +1,7 @@
 === ongoing ===
 
+- Added get_parent_category method to Event model.
+
 === 0.4.2 ===
 
 - Added CategorySlugMixin for views that should filter by category.

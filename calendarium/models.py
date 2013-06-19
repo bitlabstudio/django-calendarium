@@ -251,6 +251,12 @@ class Event(EventModelMixin):
                 yield final_occ
             occ = occurrence_gen.next()
 
+    def get_parent_category(self):
+        """Returns the main category of this event."""
+        if self.category.parent:
+            return self.category.parent
+        return self.category
+
     def get_rrule_object(self):
         """Returns the rrule object for this ``Event``."""
         if self.rule:

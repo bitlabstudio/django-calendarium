@@ -9,7 +9,11 @@ from calendarium.models import (
     Rule,
 )
 from calendarium.models import Event, ColorField
-from calendarium.tests.factories import EventFactory, OccurrenceFactory
+from calendarium.tests.factories import (
+    EventCategoryFactory,
+    EventFactory,
+    OccurrenceFactory,
+)
 from calendarium.utils import now
 from calendarium.widgets import ColorPickerWidget
 
@@ -86,6 +90,21 @@ class EventTestCase(TestCase):
             now(), now() + timedelta(days=7))
         self.assertEqual(occurrence_gen.next().title, 'foo_occurrence', msg=(
             'The persistent occurrence should have been first in the list.'))
+
+    def test_get_parent_category(self):
+        """Tests for the ``get_parent_category`` method."""
+        result = self.event.get_parent_category()
+        self.assertEqual(result, self.event.category, msg=(
+            "If the event's category has no parent, it should return the"
+            " category"))
+
+        cat2 = EventCategoryFactory()
+        self.event.category.parent = cat2
+        self.event.save()
+        result = self.event.get_parent_category()
+        self.assertEqual(result, self.event.category.parent, msg=(
+            "If the event's category has a parent, it should return that"
+            " parent"))
 
 
 class EventCategoryTestCase(TestCase):
