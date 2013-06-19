@@ -162,6 +162,7 @@ class Event(EventModelMixin):
 
     image = FilerImageField(
         verbose_name=_('Image'),
+        related_name='calendarium_event_images',
         null=True, blank=True,
     )
 

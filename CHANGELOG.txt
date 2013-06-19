@@ -1,5 +1,7 @@
 === ongoing ===
 
+- Added related name to image field.
+
 === 0.4.3 ===
 
 - Added get_parent_category method to Event model.
