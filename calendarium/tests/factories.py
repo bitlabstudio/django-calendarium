@@ -114,6 +114,11 @@ class EventRelationFactory(factory.Factory):
     relation_type = factory.Sequence(lambda n: 'relation_type{0}'.format(n))
 
 
+class EventRelation(EventRelationFactory):
+    """Deprecated class name kept for backwards compatibility."""
+    pass
+
+
 class OccurrenceFactory(EventFactoryMixin):
     """Factory for the ``Occurrence`` model."""
     FACTORY_FOR = Occurrence

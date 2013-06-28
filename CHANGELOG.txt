@@ -1,6 +1,10 @@
 === ongoing ===
 
 
+=== 0.4.5 ===
+
+- re-enabled deprecated class name for backwards compatibility
+
 === 0.4.4 ===
 
 - Fixed factory name and tests
