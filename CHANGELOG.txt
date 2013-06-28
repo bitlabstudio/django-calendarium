@@ -1,5 +1,8 @@
 === ongoing ===
 
+
+=== 0.4.4 ===
+
 - Fixed factory name and tests
 - Added related name to image field.
 
