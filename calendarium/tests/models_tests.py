@@ -4,7 +4,6 @@ from django.utils.timezone import timedelta
 
 from calendarium.models import (
     EventCategory,
-    EventRelation,
     Occurrence,
     Rule,
 )
@@ -12,6 +11,7 @@ from calendarium.models import Event, ColorField
 from calendarium.tests.factories import (
     EventCategoryFactory,
     EventFactory,
+    EventRelationFactory,
     OccurrenceFactory,
 )
 from calendarium.utils import now
@@ -135,7 +135,7 @@ class EventRelationTestCase(TestCase):
 
     def test_instantiation(self):
         """Test for instantiation of the ``EventRelation`` model."""
-        event_relation = EventRelation()
+        event_relation = EventRelationFactory()
         self.assertTrue(event_relation)
 
 

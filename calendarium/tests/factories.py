@@ -105,7 +105,7 @@ class EventFactory(EventFactoryMixin):
             self.save()
 
 
-class EventRelation(factory.Factory):
+class EventRelationFactory(factory.Factory):
     """Factory for the ``EventRelation`` model."""
     FACTORY_FOR = EventRelation
 
