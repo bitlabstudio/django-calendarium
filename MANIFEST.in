@@ -6,7 +6,7 @@ include README.md
 graft calendarium
 graft docs
 graft docs/source
-global-exclude *.orig *.pyc *.log
+global-exclude *.orig *.pyc *.log *.swp
 prune docs/build
 prune calendarium/tests/coverage
 prune calendarium/.ropeproject
