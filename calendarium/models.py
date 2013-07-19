@@ -113,6 +113,13 @@ class EventModelMixin(models.Model):
     def __unicode__(self):
         return self.title
 
+    def save(self, *args, **kwargs):
+        # start should override end if end is set wrong. This auto-corrects
+        # usage errors when creating or updating events.
+        if self.end < self.start:
+            self.end = self.start
+        return super(EventModelMixin, self).save(*args, **kwargs)
+
     class Meta:
         abstract = True
 

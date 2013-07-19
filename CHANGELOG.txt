@@ -1,6 +1,8 @@
 === ongoing ===
 
 
+- Added auto-correction of event end date if end date is before start date
+
 === 0.4.5 ===
 
 - re-enabled deprecated class name for backwards compatibility

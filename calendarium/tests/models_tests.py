@@ -106,6 +106,12 @@ class EventTestCase(TestCase):
             "If the event's category has a parent, it should return that"
             " parent"))
 
+    def test_save_autocorrection(self):
+        event = EventFactory(rule=None)
+        event.end = event.end - timedelta(hours=2)
+        event.save()
+        self.assertEqual(event.start, event.end)
+
 
 class EventCategoryTestCase(TestCase):
     """Tests for the ``EventCategory`` model."""
