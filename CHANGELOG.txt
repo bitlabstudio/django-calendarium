@@ -1,6 +1,8 @@
 === ongoing ===
 
 
+=== 0.4.6 ===
+
 - Added auto-correction of event end date if end date is before start date
 
 === 0.4.5 ===
