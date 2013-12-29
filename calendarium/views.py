@@ -8,6 +8,7 @@ from django.forms.models import model_to_dict
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.utils.timezone import datetime, now, timedelta, utc
+from django.utils.translation import ugettext_lazy as _
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -21,6 +22,7 @@ from django.views.generic import (
 from .constants import OCCURRENCE_DECISIONS
 from .forms import OccurrenceForm
 from .models import EventCategory, Event, Occurrence
+from .settings import SHIFT_WEEKSTART
 from .utils import monday_of_week
 
 
@@ -100,6 +102,12 @@ class MonthView(CategoryMixin, TemplateView):
         return super(MonthView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        firstweekday = 0 + SHIFT_WEEKSTART
+        while firstweekday < 0:
+            firstweekday += 7
+        while firstweekday > 6:
+            firstweekday -= 7
+
         ctx = self.get_category_context()
         month = [[]]
         week = 0
@@ -110,7 +118,9 @@ class MonthView(CategoryMixin, TemplateView):
 
         all_occurrences = Event.objects.get_occurrences(
             start, end, ctx.get('current_category'))
-        for day in calendar.Calendar().itermonthdays(self.year, self.month):
+        cal = calendar.Calendar()
+        cal.setfirstweekday(firstweekday)
+        for day in cal.itermonthdays(self.year, self.month):
             current = False
             if day:
                 date = datetime(year=self.year, month=self.month, day=day,
@@ -127,7 +137,9 @@ class MonthView(CategoryMixin, TemplateView):
             if len(month[week]) == 7:
                 month.append([])
                 week += 1
-        ctx.update({'month': month, 'date': date})
+        calendar.setfirstweekday(firstweekday)
+        weekdays = [_(header) for header in calendar.weekheader(10).split()]
+        ctx.update({'month': month, 'date': date, 'weekdays': weekdays})
         return ctx
 
 
@@ -159,14 +171,15 @@ class WeekView(CategoryMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = self.get_category_context()
-        date = monday_of_week(self.year, self.week)
+        date = monday_of_week(self.year, self.week) + relativedelta(
+            days=SHIFT_WEEKSTART)
         week = []
-        day = 0
+        day = SHIFT_WEEKSTART
         start = date
-        end = date + relativedelta(days=7)
+        end = date + relativedelta(days=7 + SHIFT_WEEKSTART)
         all_occurrences = Event.objects.get_occurrences(
             start, end, ctx.get('current_category'))
-        while day < 7:
+        while day < 7 + SHIFT_WEEKSTART:
             current = False
             occurrences = filter(
                 lambda occ, date=date: occ.start.replace(

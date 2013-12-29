@@ -17,13 +17,9 @@
 <table>
     <tr>
         <th></th>
-        <th>{% trans "Monday" %}</td>
-        <th>{% trans "Tuesday" %}</td>
-        <th>{% trans "Wednesday" %}</td>
-        <th>{% trans "Thursday" %}</td>
-        <th>{% trans "Friday" %}</td>
-        <th>{% trans "Saturday" %}</td>
-        <th>{% trans "Sunday" %}</td>
+        {% for weekday in weekdays %}
+            <th>{{ weekday }}</th>
+        {% endfor %}
     </tr>
     {% for week in month %}
         {% if week %}
