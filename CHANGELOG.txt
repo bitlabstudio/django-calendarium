@@ -1,5 +1,9 @@
 === ongoing ===
 
+=== 0.5 ===
+
+- Updated urls.py to be compatible with Django 1.6
+- Documentation improvements
 
 === 0.4.6 ===
 
