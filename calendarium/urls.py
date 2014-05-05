@@ -1,5 +1,5 @@
 """URLs for the ``calendarium`` app."""
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 from calendarium.views import (
     CalendariumRedirectView,
