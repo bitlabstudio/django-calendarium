@@ -10,6 +10,7 @@ https://github.com/thauber/django-schedule/tree/master/schedule/models
 import json
 from dateutil import rrule
 
+from django.conf import settings
 from django.contrib.contenttypes import generic
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
@@ -138,7 +139,7 @@ class Event(EventModelMixin):
     """
 
     created_by = models.ForeignKey(
-        'auth.User',
+        settings.AUTH_USER_MODEL,
         verbose_name=_('Created by'),
         related_name='events',
         blank=True, null=True,
@@ -369,7 +370,7 @@ class Occurrence(EventModelMixin):
 
     """
     created_by = models.ForeignKey(
-        'auth.User',
+        settings.AUTH_USER_MODEL,
         verbose_name=_('Created by'),
         related_name='occurrences',
         blank=True, null=True,
