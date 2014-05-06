@@ -15,7 +15,7 @@ from calendarium.tests.test_app.models import DummyModelFactory
 from calendarium.utils import now
 
 
-class GroupFactory(factory.Factory):
+class GroupFactory(factory.DjangoModelFactory):
     FACTORY_FOR = Group
 
     name = factory.Sequence(lambda n: 'Test Group %s' % n)
@@ -28,7 +28,7 @@ class GroupFactory(factory.Factory):
         return group
 
 
-class EventCategoryFactory(factory.Factory):
+class EventCategoryFactory(factory.DjangoModelFactory):
     """Factory for the ``EventCategory`` model."""
     FACTORY_FOR = EventCategory
 
@@ -36,7 +36,7 @@ class EventCategoryFactory(factory.Factory):
     color = factory.Sequence(lambda n: 'col{0}'.format(n))
 
 
-class EventFactoryMixin(factory.Factory):
+class EventFactoryMixin(factory.DjangoModelFactory):
     """Mixin for the event models."""
     FACTORY_FOR = None
 
@@ -47,7 +47,7 @@ class EventFactoryMixin(factory.Factory):
     creation_date = now()
 
 
-class RuleFactory(factory.Factory):
+class RuleFactory(factory.DjangoModelFactory):
     """Factory for the ``Rule`` model."""
     FACTORY_FOR = Rule
 
@@ -72,8 +72,8 @@ class EventFactory(EventFactoryMixin):
     category = factory.SubFactory(EventCategoryFactory)
     rule = factory.SubFactory(RuleFactory)
 
-    @factory.post_generation(extract_prefix='set')
-    def time_offset(self, create, extracted, **kwargs):
+    @factory.post_generation
+    def set(self, create, extracted, **kwargs):
         """
         On initialization of the Factory one can pass following argument:
 
@@ -105,7 +105,7 @@ class EventFactory(EventFactoryMixin):
             self.save()
 
 
-class EventRelationFactory(factory.Factory):
+class EventRelationFactory(factory.DjangoModelFactory):
     """Factory for the ``EventRelation`` model."""
     FACTORY_FOR = EventRelation
 
@@ -126,9 +126,10 @@ class OccurrenceFactory(EventFactoryMixin):
     event = factory.SubFactory(EventFactory)
     original_start = now()
     original_end = now() + timedelta(days=1)
+    cancelled = False
 
-    @factory.post_generation(extract_prefix='set')
-    def time_offset(self, create, extracted, **kwargs):
+    @factory.post_generation
+    def set(self, create, extracted, **kwargs):
         """
         On initialization of the Factory one can pass following argument:
 

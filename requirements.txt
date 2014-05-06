@@ -3,16 +3,17 @@
 # ===========================================================================
 # Packages essential to this app. Needed by anyone who wants to use this app.
 # ===========================================================================
-django==1.4.3
-South==0.7.6
-python-dateutil==2.1
-django-filer==0.9.4
-Pillow==2.0.0
+django==1.6.4
+South==0.8.4
+python-dateutil==2.2
+django-filer==0.9.5
+Pillow==2.4.0
 
 # ==============================================================
 # Packages needed for running the tests. Needed by contributors.
 # ==============================================================
-factory-boy<2.0.0
+factory-boy==2.3.1
+pytz==2014.2
 django-libs
 Fabric
 mock

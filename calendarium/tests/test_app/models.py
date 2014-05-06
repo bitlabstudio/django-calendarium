@@ -16,7 +16,7 @@ class DummyModel(models.Model):
     )
 
 
-class DummyModelFactory(factory.Factory):
+class DummyModelFactory(factory.DjangoModelFactory):
     """Factory for the ``DummyModel`` model."""
     FACTORY_FOR = DummyModel
 

@@ -366,6 +366,7 @@ class Occurrence(EventModelMixin):
     :event: FK to the ``Event`` this ``Occurrence`` belongs to.
     :original_start: The original start of the related ``Event``.
     :original_end: The original end of the related ``Event``.
+    :cancelled: True or false of the occurrence's cancellation status.
     :title: The title of the event.
 
     """
