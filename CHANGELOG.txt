@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 0.6 ===
+
 - Made use of Django's new user model setting: AUTH_USER_MODEL
 - Upgraded to Django>=1.6
 
