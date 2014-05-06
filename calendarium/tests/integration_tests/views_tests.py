@@ -262,7 +262,7 @@ class OccurrenceDeleteViewTestCase(
             end_recurring_period=now() + timedelta(days=200),
             set__start=-5,
         )
-        test_date = self.event.start.date() - timedelta(days=1)
+        test_date = self.event.start.date() - timedelta(days=5)
         self.is_not_callable(kwargs={
             'pk': new_event.pk,
             'year': test_date.year,

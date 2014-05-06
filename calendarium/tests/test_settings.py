@@ -5,6 +5,8 @@ DEBUG = True
 USE_TZ = True
 TIME_ZONE = 'Asia/Singapore'
 
+AUTH_USER_MODEL = 'auth.User'
+
 SITE_ID = 1
 
 DATABASES = {

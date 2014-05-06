@@ -20,3 +20,4 @@ django-nose
 coverage
 django-coverage
 ipdb
+flake8

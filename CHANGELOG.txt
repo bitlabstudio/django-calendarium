@@ -1,5 +1,7 @@
 === ongoing ===
 
+- Made use of Django's new user model setting: AUTH_USER_MODEL
+
 === 0.5 ===
 
 - Updated urls.py to be compatible with Django 1.6

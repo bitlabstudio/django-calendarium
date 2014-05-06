@@ -28,14 +28,14 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'django>=1.4.3',
+        'django>=1.5',
         'South',
         'python-dateutil',
         'django-filer',
     ],
     tests_require=[
         'fabric',
-        'factory_boy<2.0.0',
+        'factory_boy',
         'django_libs',
         'django-nose',
         'coverage',
