@@ -15,7 +15,7 @@ For further information, please check out the
 on readthedocs.
 
 
-.. image:: https://github.com/bitmazk/django-calendarium/blob/master/calendar_view.png
+.. image:: https://raw.githubusercontent.com/bitmazk/django-calendarium/master/calendar_view.png
 
 
 Settings
