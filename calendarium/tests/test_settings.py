@@ -9,6 +9,8 @@ AUTH_USER_MODEL = 'auth.User'
 
 SITE_ID = 1
 
+SECRET_KEY = 'Foobar'
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",

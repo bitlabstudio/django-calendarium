@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load i18n %}
-{% load url from future %}
 
 {% block main %}
 <h1>{% trans "Occurrences" %}</h1>
@@ -11,7 +10,7 @@
     <input type="submit" name="next" value="{% trans "Next" %}" />
     <input type="submit" name="today" value="{% trans "Today" %}" />
 </form>
-<table>
+<table class="table" id="calendar-week">
     <tr>
         {% for date, occurrences, current in week %}
             <th><a href="{% url "calendar_day" year=date|date:'Y' month=date|date:'m' day=date|date:'d' %}">{{ date|date:'D m/d' }}</a></th>
@@ -19,10 +18,16 @@
     </tr>
     <tr>
         {% for date, occurrences, current in week %}
-            <td>
-                {% for occurrence in occurrences %}
-                    <p>{{ occurrence }}</p>
-                {% endfor %}
+            <td class="{% if current %}calendarium-current{% endif %}">
+                <div class="calendarium-relative">
+                    <span class="calendarium-day-dame">{{ date|date:'D m/d' }}</span>
+                    {% for occurrence in occurrences %}
+                        <p class="alert">
+                            <a href="{% url "calendar_occurrence_detail" pk=occurrence.event.pk year=occurrence.start.year month=occurrence.start.month day=occurrence.start.day %}">{{ occurrence|truncatechars:22 }}</a>
+                        </p>
+                    {% endfor %}
+                    <a class="calendarium-day-link" href="{% url "calendar_day" year=date|date:'Y' month=date|date:'m' day=date|date:'d' %}">{% trans "View calendar day" %}</a>
+                </div>
             </td>
         {% endfor %}
     </tr>

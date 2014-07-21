@@ -1,1 +1,19 @@
-{% block main %}{% endblock %}
+{% load static %}
+<!doctype html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+
+    <link rel="stylesheet" href="{% static "calendarium/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "calendarium/css/calendar.css" %}">
+</head>
+<body>
+    {% block main %}{% endblock %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js"></script>
+</body>
+</html>
