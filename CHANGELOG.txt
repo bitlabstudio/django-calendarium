@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 1.0 ===
+
 - Added basic bootstrap styles
 
 === 0.6 ===
