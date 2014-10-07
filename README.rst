@@ -10,7 +10,10 @@ It will be heavily influenced by the awesome
 Since that project is unfortunately no longer maintained, we will try to revive
 it's ideas with TDD, class based views and AJAX in mind.
 
-For further information, please check out the
+Installation
+------------
+
+For further information, like requirements, please check out the
 `django-calendarium documentation <https://django-calendarium.readthedocs.org/>`_
 on readthedocs.
 
