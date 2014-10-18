@@ -37,6 +37,7 @@ class OccurrenceForm(forms.ModelForm):
 
     class Meta:
         model = Occurrence
+        exclude = []
 
     def save(self):
         cleaned_data = self.cleaned_data
