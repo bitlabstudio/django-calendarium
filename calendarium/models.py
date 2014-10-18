@@ -393,6 +393,7 @@ class Occurrence(EventModelMixin):
 
     cancelled = models.BooleanField(
         verbose_name=_('Cancelled'),
+        default=False,
     )
 
     title = models.CharField(
