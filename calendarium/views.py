@@ -87,16 +87,19 @@ class MonthView(CategoryMixin, TemplateView):
             if request.POST.get('next'):
                 new_date = datetime(self.year, self.month, 1) + timedelta(
                     days=31)
-                return HttpResponseRedirect(reverse('calendar_month', kwargs={
-                    'year': new_date.year, 'month': new_date.month}))
+                kwargs.update({'year': new_date.year, 'month': new_date.month})
+                return HttpResponseRedirect(
+                    reverse('calendar_month', kwargs=kwargs))
             elif request.POST.get('previous'):
                 new_date = datetime(self.year, self.month, 1) - timedelta(
                     days=1)
-                return HttpResponseRedirect(reverse('calendar_month', kwargs={
-                    'year': new_date.year, 'month': new_date.month}))
+                kwargs.update({'year': new_date.year, 'month': new_date.month})
+                return HttpResponseRedirect(
+                    reverse('calendar_month', kwargs=kwargs))
             elif request.POST.get('today'):
-                return HttpResponseRedirect(reverse('calendar_month', kwargs={
-                    'year': now().year, 'month': now().month}))
+                kwargs.update({'year': now().year, 'month': now().month})
+                return HttpResponseRedirect(
+                    reverse('calendar_month', kwargs=kwargs))
         if request.is_ajax():
             self.template_name = 'calendarium/partials/calendar_month.html'
         return super(MonthView, self).dispatch(request, *args, **kwargs)
@@ -155,16 +158,21 @@ class WeekView(CategoryMixin, TemplateView):
         if request.method == 'POST':
             if request.POST.get('next'):
                 date = monday_of_week(self.year, self.week) + timedelta(days=7)
-                return HttpResponseRedirect(reverse('calendar_week', kwargs={
-                    'year': date.year, 'week': date.date().isocalendar()[1]}))
+                kwargs.update(
+                    {'year': date.year, 'week': date.date().isocalendar()[1]})
+                return HttpResponseRedirect(
+                    reverse('calendar_week', kwargs=kwargs))
             elif request.POST.get('previous'):
                 date = monday_of_week(self.year, self.week) - timedelta(days=7)
-                return HttpResponseRedirect(reverse('calendar_week', kwargs={
-                    'year': date.year, 'week': date.date().isocalendar()[1]}))
+                kwargs.update(
+                    {'year': date.year, 'week': date.date().isocalendar()[1]})
+                return HttpResponseRedirect(
+                    reverse('calendar_week', kwargs=kwargs))
             elif request.POST.get('today'):
-                return HttpResponseRedirect(reverse('calendar_week', kwargs={
-                    'year': now().year,
-                    'week': now().date().isocalendar()[1]}))
+                kwargs.update(
+                    {'year': now().year, 'week': now().date().isocalendar()[1]})
+                return HttpResponseRedirect(
+                    reverse('calendar_week', kwargs=kwargs))
         if request.is_ajax():
             self.template_name = 'calendarium/partials/calendar_week.html'
         return super(WeekView, self).dispatch(request, *args, **kwargs)
@@ -210,16 +218,21 @@ class DayView(CategoryMixin, TemplateView):
         if request.method == 'POST':
             if request.POST.get('next'):
                 date = self.date + timedelta(days=1)
-                return HttpResponseRedirect(reverse('calendar_day', kwargs={
-                    'year': date.year, 'month': date.month, 'day': date.day}))
+                kwargs.update(
+                    {'year': date.year, 'month': date.month, 'day': date.day})
+                return HttpResponseRedirect(
+                    reverse('calendar_day', kwargs=kwargs))
             elif request.POST.get('previous'):
                 date = self.date - timedelta(days=1)
-                return HttpResponseRedirect(reverse('calendar_day', kwargs={
-                    'year': date.year, 'month': date.month, 'day': date.day}))
+                kwargs.update(
+                    {'year': date.year, 'month': date.month, 'day': date.day})
+                return HttpResponseRedirect(
+                    reverse('calendar_day', kwargs=kwargs))
             elif request.POST.get('today'):
-                return HttpResponseRedirect(reverse('calendar_day', kwargs={
-                    'year': now().year, 'month': now().month,
-                    'day': now().day}))
+                kwargs.update(
+                    {'year': now().year, 'month': now().month, 'day': now().day})
+                return HttpResponseRedirect(
+                    reverse('calendar_day', kwargs=kwargs))
         if request.is_ajax():
             self.template_name = 'calendarium/partials/calendar_day.html'
         return super(DayView, self).dispatch(request, *args, **kwargs)
