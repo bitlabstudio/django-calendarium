@@ -25,7 +25,11 @@ from calendarium.constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
 from calendarium.utils import OccurrenceReplacer
 from calendarium.widgets import ColorPickerWidget
 from filer.fields.image import FilerImageField
-from south.modelsinspector import add_introspection_rules
+try:
+    from south.modelsinspector import add_introspection_rules
+    HAS_SOUTH = True
+except ImportError:
+    HAS_SOUTH = False
 
 
 class ColorField(models.CharField):
@@ -43,7 +47,8 @@ class ColorField(models.CharField):
         return super(ColorField, self).formfield(**kwargs)
 
 
-add_introspection_rules([], ["^calendarium\.models\.ColorField"])
+if HAS_SOUTH:
+    add_introspection_rules([], ["^calendarium\.models\.ColorField"])
 
 
 class EventModelManager(models.Manager):
