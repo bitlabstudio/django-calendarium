@@ -40,7 +40,13 @@ Add the urls to your main ``urls.py``::
         url(r'^calendar/', include('calendarium.urls')),
     )
 
-Run the South migrations::
+If you are using a Django version below 1.7, add the following setting:
+
+SOUTH_MIGRATION_MODULES = {
+    'calendarium': 'calendarium.south_migrations',
+}
+
+Run the migrations::
 
     ./manage.py migrate calendarium
 

@@ -1,5 +1,7 @@
 === ongoing ===
 
+- Prepared app for Django>=1.7 migrations
+
 === 1.0 ===
 
 - Added basic bootstrap styles

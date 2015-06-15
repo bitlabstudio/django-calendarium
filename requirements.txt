@@ -8,7 +8,7 @@ python-dateutil==2.2
 django-filer==0.9.5
 Pillow==2.4.0
 # South is optional when using Django >= 1.7
-#South==1.0
+# South==1.0
 
 # ==============================================================
 # Packages needed for running the tests. Needed by contributors.
