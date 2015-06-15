@@ -1,175 +1,104 @@
-# flake8: noqa
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.conf import settings
+from django.db import models, migrations
+
+import filer.fields.image
+import calendarium.models
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Event'
-        db.create_table('calendarium_event', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('start', self.gf('django.db.models.fields.DateTimeField')()),
-            ('end', self.gf('django.db.models.fields.DateTimeField')()),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('description', self.gf('django.db.models.fields.TextField')(max_length=2048)),
-            ('creation_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(related_name='events', to=orm['auth.User'])),
-            ('category', self.gf('django.db.models.fields.related.ForeignKey')(related_name='events', to=orm['calendarium.EventCategory'])),
-            ('rule', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['calendarium.Rule'])),
-            ('end_recurring_period', self.gf('django.db.models.fields.DateTimeField')()),
-        ))
-        db.send_create_signal('calendarium', ['Event'])
+    dependencies = [
+        ('contenttypes', '0001_initial'),
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('filer', '0001_initial'),
+    ]
 
-        # Adding model 'EventCategory'
-        db.create_table('calendarium_eventcategory', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('color', self.gf('django.db.models.fields.CharField')(max_length=6)),
-        ))
-        db.send_create_signal('calendarium', ['EventCategory'])
-
-        # Adding model 'EventRelation'
-        db.create_table('calendarium_eventrelation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('event', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['calendarium.Event'])),
-            ('content_type', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['contenttypes.ContentType'])),
-            ('object_id', self.gf('django.db.models.fields.IntegerField')()),
-            ('relation_type', self.gf('django.db.models.fields.CharField')(max_length=32, null=True, blank=True)),
-        ))
-        db.send_create_signal('calendarium', ['EventRelation'])
-
-        # Adding model 'Occurrence'
-        db.create_table('calendarium_occurrence', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('start', self.gf('django.db.models.fields.DateTimeField')()),
-            ('end', self.gf('django.db.models.fields.DateTimeField')()),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=256)),
-            ('description', self.gf('django.db.models.fields.TextField')(max_length=2048)),
-            ('creation_date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('created_by', self.gf('django.db.models.fields.related.ForeignKey')(related_name='occurrences', to=orm['auth.User'])),
-            ('event', self.gf('django.db.models.fields.related.ForeignKey')(related_name='occurrences', to=orm['calendarium.Event'])),
-            ('original_start', self.gf('django.db.models.fields.DateTimeField')()),
-            ('original_end', self.gf('django.db.models.fields.DateTimeField')()),
-        ))
-        db.send_create_signal('calendarium', ['Occurrence'])
-
-        # Adding model 'Rule'
-        db.create_table('calendarium_rule', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=32)),
-            ('description', self.gf('django.db.models.fields.TextField')()),
-            ('frequency', self.gf('django.db.models.fields.CharField')(max_length=10)),
-            ('params', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-        ))
-        db.send_create_signal('calendarium', ['Rule'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'Event'
-        db.delete_table('calendarium_event')
-
-        # Deleting model 'EventCategory'
-        db.delete_table('calendarium_eventcategory')
-
-        # Deleting model 'EventRelation'
-        db.delete_table('calendarium_eventrelation')
-
-        # Deleting model 'Occurrence'
-        db.delete_table('calendarium_occurrence')
-
-        # Deleting model 'Rule'
-        db.delete_table('calendarium_rule')
-
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'calendarium.event': {
-            'Meta': {'object_name': 'Event'},
-            'category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'events'", 'to': "orm['calendarium.EventCategory']"}),
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'events'", 'to': "orm['auth.User']"}),
-            'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {'max_length': '2048'}),
-            'end': ('django.db.models.fields.DateTimeField', [], {}),
-            'end_recurring_period': ('django.db.models.fields.DateTimeField', [], {}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'rule': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['calendarium.Rule']"}),
-            'start': ('django.db.models.fields.DateTimeField', [], {}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
-        'calendarium.eventcategory': {
-            'Meta': {'object_name': 'EventCategory'},
-            'color': ('django.db.models.fields.CharField', [], {'max_length': '6'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
-        'calendarium.eventrelation': {
-            'Meta': {'object_name': 'EventRelation'},
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['calendarium.Event']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'object_id': ('django.db.models.fields.IntegerField', [], {}),
-            'relation_type': ('django.db.models.fields.CharField', [], {'max_length': '32', 'null': 'True', 'blank': 'True'})
-        },
-        'calendarium.occurrence': {
-            'Meta': {'object_name': 'Occurrence'},
-            'created_by': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'occurrences'", 'to': "orm['auth.User']"}),
-            'creation_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {'max_length': '2048'}),
-            'end': ('django.db.models.fields.DateTimeField', [], {}),
-            'event': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'occurrences'", 'to': "orm['calendarium.Event']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'original_end': ('django.db.models.fields.DateTimeField', [], {}),
-            'original_start': ('django.db.models.fields.DateTimeField', [], {}),
-            'start': ('django.db.models.fields.DateTimeField', [], {}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '256'})
-        },
-        'calendarium.rule': {
-            'Meta': {'object_name': 'Rule'},
-            'description': ('django.db.models.fields.TextField', [], {}),
-            'frequency': ('django.db.models.fields.CharField', [], {'max_length': '10'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '32'}),
-            'params': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        }
-    }
-
-    complete_apps = ['calendarium']
+    operations = [
+        migrations.CreateModel(
+            name='Event',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('start', models.DateTimeField(verbose_name='Start date')),
+                ('end', models.DateTimeField(verbose_name='End date')),
+                ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='Creation date')),
+                ('description', models.TextField(max_length=2048, verbose_name='Description', blank=True)),
+                ('end_recurring_period', models.DateTimeField(null=True, verbose_name='End of recurring', blank=True)),
+                ('title', models.CharField(max_length=256, verbose_name='Title')),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='EventCategory',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=256, verbose_name='Name')),
+                ('slug', models.SlugField(max_length=256, verbose_name='Slug', blank=True)),
+                ('color', calendarium.models.ColorField(max_length=6, verbose_name='Color')),
+                ('parent', models.ForeignKey(related_name='parents', verbose_name='Parent', blank=True, to='calendarium.EventCategory', null=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='EventRelation',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('object_id', models.IntegerField()),
+                ('relation_type', models.CharField(max_length=32, null=True, verbose_name='Relation type', blank=True)),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('event', models.ForeignKey(verbose_name='Event', to='calendarium.Event')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Occurrence',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('start', models.DateTimeField(verbose_name='Start date')),
+                ('end', models.DateTimeField(verbose_name='End date')),
+                ('creation_date', models.DateTimeField(auto_now_add=True, verbose_name='Creation date')),
+                ('description', models.TextField(max_length=2048, verbose_name='Description', blank=True)),
+                ('original_start', models.DateTimeField(verbose_name='Original start')),
+                ('original_end', models.DateTimeField(verbose_name='Original end')),
+                ('cancelled', models.BooleanField(default=False, verbose_name='Cancelled')),
+                ('title', models.CharField(max_length=256, verbose_name='Title', blank=True)),
+                ('created_by', models.ForeignKey(related_name='occurrences', verbose_name='Created by', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('event', models.ForeignKey(related_name='occurrences', verbose_name='Event', to='calendarium.Event')),
+            ],
+            options={
+                'abstract': False,
+            },
+        ),
+        migrations.CreateModel(
+            name='Rule',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=32, verbose_name='name')),
+                ('description', models.TextField(verbose_name='description')),
+                ('frequency', models.CharField(max_length=10, verbose_name='frequency', choices=[('YEARLY', 'Yearly'), ('MONTHLY', 'Monthly'), ('WEEKLY', 'Weekly'), ('DAILY', 'Daily')])),
+                ('params', models.TextField(null=True, verbose_name='params', blank=True)),
+            ],
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='category',
+            field=models.ForeignKey(related_name='events', verbose_name='Category', blank=True, to='calendarium.EventCategory', null=True),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='created_by',
+            field=models.ForeignKey(related_name='events', verbose_name='Created by', blank=True, to=settings.AUTH_USER_MODEL, null=True),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='image',
+            field=filer.fields.image.FilerImageField(related_name='calendarium_event_images', verbose_name='Image', blank=True, to='filer.Image', null=True),
+        ),
+        migrations.AddField(
+            model_name='event',
+            name='rule',
+            field=models.ForeignKey(verbose_name='Rule', blank=True, to='calendarium.Rule', null=True),
+        ),
+    ]
