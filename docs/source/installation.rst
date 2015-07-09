@@ -48,5 +48,5 @@ SOUTH_MIGRATION_MODULES = {
 
 Run the migrations::
 
-    ./manage.py migrate calendarium
+    ./manage.py migrate
 
