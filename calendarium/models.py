@@ -69,7 +69,12 @@ class EventModelManager(models.Manager):
         # so I'm still fetching **all** events before this period, that have a
         # end_recurring_period.
         # For events without a rule, I fetch only the relevant ones.
-        qs = self.get_query_set()
+        
+        # Django < 1.6 compatibility
+        getQuerySet = (self.get_query_set
+             if hasattr(self, 'get_query_set')
+             else self.get_queryset)
+        qs = getQuerySet()
         if category:
             qs = qs.filter(start__lt=end)
             relevant_events = qs.filter(
