@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 1.2 ===
+
 - Prepared app for Django>=1.7
 - Added runtests.sh script
 - Updated requirements
