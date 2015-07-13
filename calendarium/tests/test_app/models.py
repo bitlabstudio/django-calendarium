@@ -18,6 +18,7 @@ class DummyModel(models.Model):
 
 class DummyModelFactory(factory.DjangoModelFactory):
     """Factory for the ``DummyModel`` model."""
-    FACTORY_FOR = DummyModel
-
     content = factory.Sequence(lambda n: 'content{0}'.format(n))
+
+    class Meta:
+        model = DummyModel

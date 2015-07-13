@@ -9,7 +9,7 @@ from django_libs.tests.factories import UserFactory
 from django_libs.tests.mixins import ViewTestMixin
 
 from calendarium.models import Event
-from ..factories import (
+from .factories import (
     EventFactory,
     EventCategoryFactory,
     GroupFactory,

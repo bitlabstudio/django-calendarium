@@ -169,8 +169,10 @@ class WeekView(CategoryMixin, TemplateView):
                 return HttpResponseRedirect(
                     reverse('calendar_week', kwargs=kwargs))
             elif request.POST.get('today'):
-                kwargs.update(
-                    {'year': now().year, 'week': now().date().isocalendar()[1]})
+                kwargs.update({
+                    'year': now().year,
+                    'week': now().date().isocalendar()[1],
+                })
                 return HttpResponseRedirect(
                     reverse('calendar_week', kwargs=kwargs))
         if request.is_ajax():
@@ -224,13 +226,19 @@ class DayView(CategoryMixin, TemplateView):
                     reverse('calendar_day', kwargs=kwargs))
             elif request.POST.get('previous'):
                 date = self.date - timedelta(days=1)
-                kwargs.update(
-                    {'year': date.year, 'month': date.month, 'day': date.day})
+                kwargs.update({
+                    'year': date.year,
+                    'month': date.month,
+                    'day': date.day,
+                })
                 return HttpResponseRedirect(
                     reverse('calendar_day', kwargs=kwargs))
             elif request.POST.get('today'):
-                kwargs.update(
-                    {'year': now().year, 'month': now().month, 'day': now().day})
+                kwargs.update({
+                    'year': now().year,
+                    'month': now().month,
+                    'day': now().day,
+                })
                 return HttpResponseRedirect(
                     reverse('calendar_day', kwargs=kwargs))
         if request.is_ajax():

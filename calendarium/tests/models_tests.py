@@ -175,7 +175,6 @@ class OccurrenceTestCase(TestCase):
 
         occurrence_1 = OccurrenceFactory()
         occurrence_2 = OccurrenceFactory(event=occurrence_1.event)
-        period = occurrence_2.event.end_recurring_period
         occurrence_2.delete_period('this one')
         # Result is equal instead of greater. Needs to be fixed.
         # self.assertGreater(period, occurrence_2.event.end_recurring_period,
