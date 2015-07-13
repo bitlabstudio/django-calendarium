@@ -261,6 +261,7 @@ class EventDetailView(DetailView):
 class EventMixin(object):
     """Mixin to handle event-related functions."""
     model = Event
+    fields = '__all__'
 
     @method_decorator(permission_required('calendarium.add_event'))
     def dispatch(self, request, *args, **kwargs):
