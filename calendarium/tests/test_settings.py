@@ -1,15 +1,43 @@
 """Settings that need to be set in order to run the tests."""
+import logging
 import os
 
 DEBUG = True
 USE_TZ = True
 TIME_ZONE = 'Asia/Singapore'
 
+logging.getLogger("factory").setLevel(logging.WARN)
+
+EXTERNAL_APPS = [
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
+    'django.contrib.sites',
+    'django_nose',
+    'filer',
+]
+
+INTERNAL_APPS = [
+    'calendarium',
+]
+
+TEST_APPS = [
+    'calendarium.tests.test_app',
+]
+
+INSTALLED_APPS = EXTERNAL_APPS + INTERNAL_APPS + TEST_APPS
+
 AUTH_USER_MODEL = 'auth.User'
 
 SITE_ID = 1
 
 SECRET_KEY = 'Foobar'
+ALLOWED_HOSTS = []
 
 DATABASES = {
     "default": {
@@ -37,36 +65,22 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
 )
 
-COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(
-    os.path.dirname(__file__), 'coverage')
-
-COVERAGE_MODULE_EXCLUDES = [
-    'tests$', 'settings$', 'urls$', 'locale$',
-    'migrations', 'fixtures', 'admin$', 'django_extensions',
+# Django 1.8 compatibility
+MIDDLEWARE_CLASSES = [
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
-EXTERNAL_APPS = [
-    'django.contrib.admin',
-    'django.contrib.admindocs',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.messages',
-    'django.contrib.sessions',
-    'django.contrib.staticfiles',
-    'django.contrib.sitemaps',
-    'django.contrib.sites',
-    'django_nose',
-    'filer',
-]
+PASSWORD_HASHERS = (
+    'django.contrib.auth.hashers.MD5PasswordHasher',
+)
 
-INTERNAL_APPS = [
-    'calendarium',
-]
+class DisableMigrations(object):
+    def __contains__(self, item):
+        return True
 
-TEST_APPS = [
-    'calendarium.tests.test_app',
-]
+    def __getitem__(self, item):
+        return "notmigrations"
 
-INSTALLED_APPS = EXTERNAL_APPS + INTERNAL_APPS + TEST_APPS
-
-COVERAGE_MODULE_EXCLUDES += EXTERNAL_APPS
+MIGRATION_MODULES = DisableMigrations()

@@ -1,6 +1,14 @@
 === ongoing ===
 
-- Prepared app for Django>=1.7 migrations
+=== 1.3 ===
+
+- Prepared app for Django>=1.8
+
+=== 1.2 ===
+
+- Prepared app for Django>=1.7
+- Added runtests.sh script
+- Updated requirements
 
 === 1.0 ===
 

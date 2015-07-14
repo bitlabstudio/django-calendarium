@@ -62,14 +62,18 @@ class EventModelManager(models.Manager):
         # end one day forward
         if start == end:
             end = start + timedelta(days=1)
-
         # retrieving relevant events
         # TODO currently for events with a rule, I can't properly find out when
         # the last occurrence of the event ends, or find a way to filter that,
         # so I'm still fetching **all** events before this period, that have a
         # end_recurring_period.
         # For events without a rule, I fetch only the relevant ones.
-        qs = self.get_query_set()
+
+        # Django < 1.6 compatibility
+        getQuerySet = (self.get_query_set if hasattr(
+            self, 'get_query_set') else self.get_queryset)
+        qs = getQuerySet()
+
         if category:
             qs = qs.filter(start__lt=end)
             relevant_events = qs.filter(
@@ -417,10 +421,10 @@ class Occurrence(EventModelMixin):
         is_only = False
         gen = self.event.get_occurrences(
             self.start, self.event.end_recurring_period)
-        occs = list(set([occ for occ in gen]))
+        occs = list(set([occ.pk for occ in gen]))
         if len(occs) == 1:
             is_only = True
-        elif len(occs) > 1 and self == occs[-1]:
+        elif len(occs) > 1 and self.pk == occs[-1]:
             is_last = True
         if period == OCCURRENCE_DECISIONS['all']:
             # delete all persistent occurrences along with the parent event

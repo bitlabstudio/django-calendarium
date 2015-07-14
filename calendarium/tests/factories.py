@@ -1,7 +1,6 @@
 """Factories for the models of the ``calendarium`` app."""
 import factory
 
-from django.contrib.auth.models import Group, Permission
 from django.utils.timezone import timedelta
 
 from calendarium.models import (
@@ -15,31 +14,17 @@ from calendarium.tests.test_app.models import DummyModelFactory
 from calendarium.utils import now
 
 
-class GroupFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Group
-
-    name = factory.Sequence(lambda n: 'Test Group %s' % n)
-
-    @classmethod
-    def _prepare(cls, create, **kwargs):
-        group = super(GroupFactory, cls)._prepare(create, **kwargs)
-        group.permissions.add(Permission.objects.get(
-            codename='add_event', content_type__name='event'))
-        return group
-
-
 class EventCategoryFactory(factory.DjangoModelFactory):
     """Factory for the ``EventCategory`` model."""
-    FACTORY_FOR = EventCategory
-
     name = factory.Sequence(lambda n: 'category{0}'.format(n))
     color = factory.Sequence(lambda n: 'col{0}'.format(n))
+
+    class Meta:
+        model = EventCategory
 
 
 class EventFactoryMixin(factory.DjangoModelFactory):
     """Mixin for the event models."""
-    FACTORY_FOR = None
-
     start = now()
     end = now() + timedelta(hours=1)
     title = factory.Sequence(lambda n: 'title{0}'.format(n))
@@ -49,14 +34,15 @@ class EventFactoryMixin(factory.DjangoModelFactory):
 
 class RuleFactory(factory.DjangoModelFactory):
     """Factory for the ``Rule`` model."""
-    FACTORY_FOR = Rule
-
     name = factory.Sequence(lambda n: 'rule{0}'.format(n))
     description = factory.Sequence(lambda n: 'description{0}'.format(n))
     # standard is set to DAILY
     frequency = 'DAILY'
     # params are only needed for more precise rules, empty params are allowed
     params = ''
+
+    class Meta:
+        model = Rule
 
 
 class EventFactory(EventFactoryMixin):
@@ -67,10 +53,11 @@ class EventFactory(EventFactoryMixin):
     Otherwise it defaults to an event with a DAILY rule over one week.
 
     """
-    FACTORY_FOR = Event
-
     category = factory.SubFactory(EventCategoryFactory)
     rule = factory.SubFactory(RuleFactory)
+
+    class Meta:
+        model = Event
 
     @factory.post_generation
     def set(self, create, extracted, **kwargs):
@@ -107,11 +94,12 @@ class EventFactory(EventFactoryMixin):
 
 class EventRelationFactory(factory.DjangoModelFactory):
     """Factory for the ``EventRelation`` model."""
-    FACTORY_FOR = EventRelation
-
     event = factory.SubFactory(EventFactory)
     content_object = factory.SubFactory(DummyModelFactory)
     relation_type = factory.Sequence(lambda n: 'relation_type{0}'.format(n))
+
+    class Meta:
+        model = EventRelation
 
 
 class EventRelation(EventRelationFactory):
@@ -121,12 +109,13 @@ class EventRelation(EventRelationFactory):
 
 class OccurrenceFactory(EventFactoryMixin):
     """Factory for the ``Occurrence`` model."""
-    FACTORY_FOR = Occurrence
-
     event = factory.SubFactory(EventFactory)
     original_start = now()
     original_end = now() + timedelta(days=1)
     cancelled = False
+
+    class Meta:
+        model = Occurrence
 
     @factory.post_generation
     def set(self, create, extracted, **kwargs):
