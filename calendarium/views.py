@@ -306,9 +306,9 @@ class OccurrenceViewMixin(object):
                 start__year=year, start__month=month, start__day=day)
         except Occurrence.DoesNotExist:
             occ_gen = self.event.get_occurrences(self.event.start)
-            occ = occ_gen.next()
+            occ = next(occ_gen)
             while occ.start.date() < date.date():
-                occ = occ_gen.next()
+                occ = next(occ_gen)
         if occ.start.date() == date.date():
             self.occurrence = occ
         else:
