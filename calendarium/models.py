@@ -224,11 +224,11 @@ class Event(EventModelMixin):
                 start - length, end)
 
             # chosing the first item from the generator to initiate
-            occ_start = occ_start_gen.next()
+            occ_start = next(occ_start_gen)
             while not end or (end and occ_start <= end):
                 occ_end = occ_start + length
                 yield self._create_occurrence(occ_start, occ_end)
-                occ_start = occ_start_gen.next()
+                occ_start = next(occ_start_gen)
         else:
             # check if event is in the period
             if (not end or self.start < end) and self.end >= start:
@@ -248,7 +248,7 @@ class Event(EventModelMixin):
         # get additional occs, that we need to take into concern
         additional_occs = occ_replacer.get_additional_occurrences(
             start, end)
-        occ = occurrence_gen.next()
+        occ = next(occurrence_gen)
         while not end or (occ.start < end or any(additional_occs)):
             if occ_replacer.has_occurrence(occ):
                 p_occ = occ_replacer.get_occurrence(occ)
@@ -267,7 +267,7 @@ class Event(EventModelMixin):
                 final_occ = estimated_occ
             if not final_occ.cancelled:
                 yield final_occ
-            occ = occurrence_gen.next()
+            occ = next(occurrence_gen)
 
     def get_parent_category(self):
         """Returns the main category of this event."""
