@@ -14,6 +14,7 @@ Pillow==2.9.0
 # Packages needed for running the tests. Needed by contributors.
 # ==============================================================
 factory-boy==2.5.2
+mixer==5.1.7
 pytz==2014.2
 django-libs
 Fabric

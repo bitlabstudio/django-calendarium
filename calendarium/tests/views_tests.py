@@ -5,16 +5,17 @@
 from django.utils.timezone import timedelta
 from django.test import TestCase
 
-from django_libs.tests.factories import UserFactory
-from django_libs.tests.mixins import ViewTestMixin
+from django_libs.tests.mixins import ViewTestMixin, ViewRequestFactoryTestMixin
+from mixer.backend.django import mixer
 
-from calendarium.models import Event
 from .factories import (
     EventFactory,
     EventCategoryFactory,
     RuleFactory,
 )
-from calendarium.utils import now
+from .. import views
+from ..models import Event
+from ..utils import now
 
 
 class CalendariumRedirectViewTestCase(ViewTestMixin, TestCase):
@@ -146,37 +147,31 @@ class DayViewTestCase(ViewTestMixin, TestCase):
                                      'day': self.day})
 
 
-class EventUpdateViewTestCase(ViewTestMixin, TestCase):
+class EventUpdateViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``EventUpdateView`` view class."""
-    longMessage = True
-
-    def get_view_name(self):
-        return 'calendar_event_update'
+    view_class = views.EventUpdateView
 
     def get_view_kwargs(self):
         return {'pk': self.event.pk}
 
     def setUp(self):
         self.event = EventFactory()
-        self.user = UserFactory(is_superuser=True)
+        self.user = mixer.blend('auth.User', is_superuser=True)
 
     def test_view(self):
-        self.should_be_callable_when_authenticated(self.user)
+        self.is_callable(user=self.user)
 
 
-class EventCreateViewTestCase(ViewTestMixin, TestCase):
+class EventCreateViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``EventCreateView`` view class."""
-    longMessage = True
-
-    def get_view_name(self):
-        return 'calendar_event_create'
+    view_class = views.EventCreateView
 
     def setUp(self):
-        self.user = UserFactory(is_superuser=True)
+        self.user = mixer.blend('auth.User', is_superuser=True)
 
     def test_view(self):
-        self.should_be_callable_when_authenticated(self.user)
-        self.is_callable(data={'delete': True})
+        self.is_callable(user=self.user)
+        self.is_callable(user=self.user, data={'delete': True})
         self.assertEqual(Event.objects.all().count(), 0)
 
 
