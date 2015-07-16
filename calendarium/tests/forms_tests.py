@@ -21,8 +21,8 @@ class OccurrenceFormTestCase(TestCase):
     def setUp(self):
         # single, not recurring event
         self.event = EventFactory(rule=None, end_recurring_period=None)
-        self.event_occurrence = self.event.get_occurrences(
-            self.event.start).next()
+        self.event_occurrence = next(self.event.get_occurrences(
+            self.event.start))
 
         # recurring event weekly on mondays over 6 weeks
         self.rule = RuleFactory(
