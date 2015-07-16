@@ -43,7 +43,7 @@ class OccurrenceForm(forms.ModelForm):
         cleaned_data = self.cleaned_data
         if cleaned_data['decision'] == OCCURRENCE_DECISIONS['all']:
             changes = dict(
-                (key, value) for key, value in cleaned_data.iteritems()
+                (key, value) for key, value in iter(cleaned_data.items())
                 if value != self.initial.get(key) and self.initial.get(key))
             event = self.instance.event
             # for each field on the event, check for new data in cleaned_data
@@ -80,7 +80,7 @@ class OccurrenceForm(forms.ModelForm):
         elif cleaned_data['decision'] == OCCURRENCE_DECISIONS['following']:
             # get the changes
             changes = dict(
-                (key, value) for key, value in cleaned_data.iteritems()
+                (key, value) for key, value in iter(cleaned_data.items())
                 if value != self.initial.get(key) and self.initial.get(key))
 
             # change the old event
