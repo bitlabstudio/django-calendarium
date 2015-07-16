@@ -5,7 +5,7 @@ from django.forms.models import model_to_dict
 from django.test import TestCase
 from django.utils.timezone import timedelta
 
-from django_libs.tests.factories import UserFactory
+from mixer.backend.django import mixer
 
 from calendarium.constants import FREQUENCIES, OCCURRENCE_DECISIONS
 from calendarium.forms import OccurrenceForm
@@ -21,8 +21,8 @@ class OccurrenceFormTestCase(TestCase):
     def setUp(self):
         # single, not recurring event
         self.event = EventFactory(rule=None, end_recurring_period=None)
-        self.event_occurrence = self.event.get_occurrences(
-            self.event.start).next()
+        self.event_occurrence = next(self.event.get_occurrences(
+            self.event.start))
 
         # recurring event weekly on mondays over 6 weeks
         self.rule = RuleFactory(
@@ -31,7 +31,7 @@ class OccurrenceFormTestCase(TestCase):
         self.rec_event = EventFactory(
             rule=self.rule, start=now(),
             set__end_recurring_period=41,
-            created_by=UserFactory(),
+            created_by=mixer.blend('auth.User'),
         )
         self.rec_occurrence_list = [
             occ for occ in self.rec_event.get_occurrences(
