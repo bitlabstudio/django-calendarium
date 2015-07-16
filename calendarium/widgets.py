@@ -26,17 +26,20 @@ class ColorPickerWidget(forms.TextInput):
 
     def render(self, name, value, attrs=None):
         rendered = super(ColorPickerWidget, self).render(name, value, attrs)
-        return rendered + mark_safe(
-            u'''<script type="text/javascript">
-                $('#id_%s').ColorPicker({
-                onSubmit: function(hsb, hex, rgb, el) {
+        script = \
+            '''
+            <script type="text/javascript">
+                $('#id_{0}').ColorPicker({{
+                onSubmit: function(hsb, hex, rgb, el) {{
                     $(el).val(hex);
                     $(el).ColorPickerHide();
-                },
-                onBeforeShow: function () {
+                }},
+                onBeforeShow: function () {{
                     $(this).ColorPickerSetColor(this.value);
-                }
-             }).bind('keyup', function(){
+                }}
+             }}).bind('keyup', function(){{
                  $(this).ColorPickerSetColor(this.value);
-             });
-            </script>''' % name)
+             }});
+            </script>
+            '''
+        return rendered + mark_safe(script.format(name))
