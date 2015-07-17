@@ -7,19 +7,20 @@ Installation
 ------------
 
 For further information, like requirements, please check out the
-`django-calendarium documentation <https://django-calendarium.readthedocs.org/>`
+[django-calendarium documentation](https://django-calendarium.readthedocs.org/)
 on readthedocs.
 
-
-.. image:: https://raw.githubusercontent.com/bitmazk/django-calendarium/master/calendar_view.png
+![Calendar Example](https://raw.githubusercontent.com/bitmazk/django-calendarium/master/calendar_view.png "Calendar Example")
 
 
 We added some basic bootstrap styles to start with. If you're not using
 Bootstrap we recommend to build your own styles, otherwise try:
 
-    {% load static %}
-    <link rel="stylesheet" href="{% static "calendarium/css/bootstrap.min.css" %}">
-    <link rel="stylesheet" href="{% static "calendarium/css/calendar.css" %}">
+```html
+{% load static %}
+<link rel="stylesheet" href="{% static "calendarium/css/bootstrap.min.css" %}">
+<link rel="stylesheet" href="{% static "calendarium/css/calendar.css" %}">
+```
 
 
 Settings
@@ -35,7 +36,6 @@ case you would add the following to your settings::
 CALENDARIUM_SHIFT_WEEKSTART = -1
 ```
 
-
 Extending the app
 -----------------
 
@@ -46,9 +46,7 @@ This app should do one thing and do it well, and that thing is: to output
 (recurring) events for a given day, week, month or timeframe.
 
 A very common usecase is to display public events that are open for
-registration. For this case we have created another app `django-event-rsvp
-<https://github.com/bitmazk/django-event-rsvp>` which plays nicely with this
-app.
+registration. For this case we have created another app [django-event-rsvp](https://github.com/bitmazk/django-event-rsvp) which plays nicely with this app.
 
 You might do it in a similar way. Since events created in the calendarium app
 can easily be tied to any object via generic foreign keys, you can therefore
