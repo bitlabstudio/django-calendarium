@@ -61,3 +61,14 @@ Roadmap
 Check the issue tracker on github for milestones and features to come. If you
 have ideas or questions, please don't hesitate to open an issue on the issue
 tracker.
+
+Compatibility
+-------------
+
+    py\dj   |  1.5  |  1.6  |  1.7  |  1.8  |
+    -----------------------------------------
+    2.6     |   X   |   X   |   X   |   X   |
+    2.7     |   X   |  PASS |  PASS |  PASS |
+    3.2     |   X   |  PASS |  PASS |  PASS |
+    3.4     |  PASS |  PASS |  PASS |  PASS |
+    -----------------------------------------
