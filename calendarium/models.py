@@ -177,6 +177,11 @@ class Event(EventModelMixin):
         verbose_name=_('Title'),
     )
 
+    slug = models.SlugField(
+        verbose_name=_('Slug'),
+        unique=True,
+    )
+
     image = FilerImageField(
         verbose_name=_('Image'),
         related_name='calendarium_event_images',
