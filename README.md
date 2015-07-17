@@ -32,7 +32,7 @@ case is probably, that you want your calendar week to start on sunday in which
 case you would add the following to your settings::
  
 ```python
-    CALENDARIUM_SHIFT_WEEKSTART = -1
+CALENDARIUM_SHIFT_WEEKSTART = -1
 ```
 
 
@@ -47,7 +47,7 @@ This app should do one thing and do it well, and that thing is: to output
 
 A very common usecase is to display public events that are open for
 registration. For this case we have created another app `django-event-rsvp
-<https://github.com/bitmazk/django-event-rsvp>`_ which plays nicely with this
+<https://github.com/bitmazk/django-event-rsvp>` which plays nicely with this
 app.
 
 You might do it in a similar way. Since events created in the calendarium app
