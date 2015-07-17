@@ -88,7 +88,7 @@ class EventTestCase(TestCase):
             ' of occurrences.'))
         occurrence_gen = self.event.get_occurrences(
             now(), now() + timedelta(days=7))
-        self.assertEqual(occurrence_gen.next().title, 'foo_occurrence', msg=(
+        self.assertEqual(next(occurrence_gen).title, 'foo_occurrence', msg=(
             'The persistent occurrence should have been first in the list.'))
 
     def test_get_parent_category(self):
