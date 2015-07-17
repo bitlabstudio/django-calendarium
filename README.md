@@ -1,14 +1,7 @@
 Django Calendarium
 ==================
 
-A Django application for managing and displaying a calendar and it's events
-in your templates.
-
-It will be heavily influenced by the awesome
-`django-schedule <https://github.com/thauber/django-schedule>`_
-
-Since that project is unfortunately no longer maintained, we will try to revive
-it's ideas with TDD, class based views and AJAX in mind.
+A Django application for managing and displaying a calendar and its events.
 
 Installation
 ------------

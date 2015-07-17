@@ -5,9 +5,9 @@ If you want to contribute to this project, please perform the following steps::
 
     # Fork this repository
     # Clone your fork
-    $ mkvirtualenv -p python2.7 django-calendarium
+    $ mkvirtualenv django-calendarium
     $ pip install -r requirements.txt
-    $ python setup.py test
+    $ ./runtests.sh
     # You should get no failing tests
 
     $ git checkout -b feature_branch master

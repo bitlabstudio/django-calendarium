@@ -1,13 +1,6 @@
 Installation
 ============
 
-If you have not previously installed django-filer::
-
-    $ pip install django-filer
-
-    ./manage.py syncdb
-    ./manage.py migrate
-
 If you want to install the latest stable release from PyPi::
 
     $ pip install django-calendarium
@@ -49,4 +42,3 @@ SOUTH_MIGRATION_MODULES = {
 Run the migrations::
 
     ./manage.py migrate
-
