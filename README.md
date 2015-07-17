@@ -7,7 +7,7 @@ Installation
 ------------
 
 For further information, like requirements, please check out the
-`django-calendarium documentation <https://django-calendarium.readthedocs.org/>`_
+`django-calendarium documentation <https://django-calendarium.readthedocs.org/>`
 on readthedocs.
 
 
@@ -30,10 +30,10 @@ If you want your calendar to start on a different date, you can set the
 calendar should add or subtract from the start day of the week. Most common
 case is probably, that you want your calendar week to start on sunday in which
 case you would add the following to your settings::
-
-.. code-block:: python
-
+ 
+```python
     CALENDARIUM_SHIFT_WEEKSTART = -1
+```
 
 
 Extending the app
