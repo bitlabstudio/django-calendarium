@@ -194,12 +194,15 @@ class Event(EventModelMixin):
     objects = EventModelManager()
 
     def save(self, *args, **kwargs):
-        self.slug = orig = slugify(self.title)
-        for x in itertools.count(1):
-            if not Event.objects.filter(slug=self.slug).exists():
-                break
-            self.slug = '%s-%d' % (orig, x)
-        return super(Event, self).save(*args, **kwargs)
+        if self.slug != 'default':
+            return super(Event, self).save(*args, **kwargs)
+        else:
+            self.slug = orig = slugify(self.title)
+            for x in itertools.count(1):
+                if not Event.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                    break
+                self.slug = '%s-%d' % (orig, x)
+            return super(Event, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('calendar_event_detail', kwargs={'pk': self.pk})
