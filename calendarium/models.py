@@ -20,6 +20,7 @@ from django.db.models import Q
 from django.template.defaultfilters import slugify
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _
+import itertools
 
 from calendarium.constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
 from calendarium.utils import OccurrenceReplacer
@@ -178,6 +179,8 @@ class Event(EventModelMixin):
     )
 
     slug = models.SlugField(
+        default='default',
+        max_length=256,
         verbose_name=_('Slug'),
         unique=True,
     )
@@ -189,6 +192,14 @@ class Event(EventModelMixin):
     )
 
     objects = EventModelManager()
+
+    def save(self, *args, **kwargs):
+        self.slug = orig = slugify(self.title)
+        for x in itertools.count(1):
+            if not Event.objects.filter(slug=self.slug).exists():
+                break
+            self.slug = '%s-%d' % (orig, x)
+        return super(Event, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('calendar_event_detail', kwargs={'pk': self.pk})
