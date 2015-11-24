@@ -1,5 +1,7 @@
 === ongoing ===
 
+=== 1.3.2 ===
+
 - Python3.X related improvements
 
 === 1.3.1 ===
