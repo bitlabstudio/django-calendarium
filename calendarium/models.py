@@ -1,4 +1,4 @@
-"""
+﻿"""
 Models for the ``calendarium`` app.
 
 The code of these models is highly influenced by or taken from the models of
@@ -121,6 +121,9 @@ class EventModelMixin(models.Model):
     )
 
     def __unicode__(self):
+        return self.title
+
+    def __str__(self):
         return self.title
 
     def save(self, *args, **kwargs):
@@ -318,6 +321,9 @@ class EventCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+    def __str__(self):
+        return self.title
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -364,7 +370,10 @@ class EventRelation(models.Model):
     def __unicode__(self):
         return 'type "{0}" for "{1}"'.format(
             self.relation_type, self.event.title)
-
+    
+    def __str__(self):
+        return 'type "{0}" for "{1}"'.format(
+            self.relation_type, self.event.title)
 
 class Occurrence(EventModelMixin):
     """
@@ -491,6 +500,9 @@ class Rule(models.Model):
     )
 
     def __unicode__(self):
+        return self.name
+
+    def __str__(self):
         return self.name
 
     def get_params(self):
