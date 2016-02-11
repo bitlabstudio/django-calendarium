@@ -1,5 +1,7 @@
 === ongoing ===
 
+- fixed AttributeError for EventCategory
+
 === 1.3.2 ===
 
 - Python3.X related improvements

@@ -322,7 +322,7 @@ class EventCategory(models.Model):
         return self.name
 
     def __str__(self):
-        return self.title
+        return self.name
 
     def save(self, *args, **kwargs):
         if not self.slug:
