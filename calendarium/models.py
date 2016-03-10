@@ -11,7 +11,7 @@ import json
 from dateutil import rrule
 
 from django.conf import settings
-from django.contrib.contenttypes import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
@@ -356,7 +356,7 @@ class EventRelation(models.Model):
 
     object_id = models.IntegerField()
 
-    content_object = generic.GenericForeignKey(
+    content_object = GenericForeignKey(
         'content_type',
         'object_id',
     )
