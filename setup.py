@@ -32,15 +32,4 @@ setup(
         'python-dateutil',
         'django-filer',
     ],
-    tests_require=[
-        'fabric',
-        'factory_boy',
-        'django_libs',
-        'django-nose',
-        'coverage',
-        'django-coverage',
-        'mixer',
-        'mock',
-    ],
-    test_suite='calendarium.tests.runtests.runtests',
 )

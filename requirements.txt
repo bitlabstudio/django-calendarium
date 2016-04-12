@@ -3,24 +3,7 @@
 # ===========================================================================
 # Packages essential to this app. Needed by anyone who wants to use this app.
 # ===========================================================================
-django==1.7.9
-python-dateutil==2.4.2
-django-filer==0.9.11
-Pillow==2.9.0
-# South is optional when using Django >= 1.7
-# South==1.0
-
-# ==============================================================
-# Packages needed for running the tests. Needed by contributors.
-# ==============================================================
-factory-boy==2.5.2
-mixer==5.1.7
-pytz==2014.2
-django-libs
-Fabric
-mock
-django-nose
-coverage
-django-coverage
-ipdb
-flake8
+django
+python-dateutil
+django-filer
+Pillow

@@ -4,11 +4,8 @@ from django.contrib.auth.models import User
 from django.forms.models import model_to_dict
 from django.utils.timezone import datetime, timedelta
 
-from calendarium.constants import (
-    OCCURRENCE_DECISION_CHOICESS,
-    OCCURRENCE_DECISIONS,
-)
-from calendarium.models import Event, Occurrence
+from .constants import OCCURRENCE_DECISION_CHOICESS, OCCURRENCE_DECISIONS
+from .models import Event, Occurrence
 
 
 class OccurrenceForm(forms.ModelForm):
@@ -97,8 +94,8 @@ class OccurrenceForm(forms.ModelForm):
             new_event.id = None
             event_kwargs = model_to_dict(self.instance)
             for field_name in [field.name for field in new_event._meta.fields]:
-                if (field_name == 'created_by'
-                        and event_kwargs.get('created_by')):
+                if (field_name == 'created_by' and
+                        event_kwargs.get('created_by')):
                     value = User.objects.get(pk=event_kwargs.get(field_name))
                 elif field_name in ['rule', 'category']:
                     continue

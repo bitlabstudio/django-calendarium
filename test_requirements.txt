@@ -1,0 +1,10 @@
+mixer
+pytz
+django-libs
+fabric3
+mock
+coverage
+django-coverage
+ipdb
+flake8
+tox

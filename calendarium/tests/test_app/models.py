@@ -1,6 +1,4 @@
 """Models for the ``test_app`` test app."""
-import factory
-
 from django.db import models
 
 
@@ -14,11 +12,3 @@ class DummyModel(models.Model):
     content = models.CharField(
         max_length=32,
     )
-
-
-class DummyModelFactory(factory.DjangoModelFactory):
-    """Factory for the ``DummyModel`` model."""
-    content = factory.Sequence(lambda n: 'content{0}'.format(n))
-
-    class Meta:
-        model = DummyModel

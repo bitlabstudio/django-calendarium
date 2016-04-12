@@ -7,11 +7,10 @@ from django.utils.timezone import timedelta
 
 from mixer.backend.django import mixer
 
-from calendarium.constants import FREQUENCIES, OCCURRENCE_DECISIONS
-from calendarium.forms import OccurrenceForm
-from calendarium.models import Event, Occurrence
-from calendarium.tests.factories import EventFactory, RuleFactory
-from calendarium.utils import now
+from ..constants import FREQUENCIES, OCCURRENCE_DECISIONS
+from ..forms import OccurrenceForm
+from ..models import Event, Occurrence
+from ..utils import now
 
 
 class OccurrenceFormTestCase(TestCase):
@@ -20,18 +19,20 @@ class OccurrenceFormTestCase(TestCase):
 
     def setUp(self):
         # single, not recurring event
-        self.event = EventFactory(rule=None, end_recurring_period=None)
+        self.event = mixer.blend('calendarium.Event', rule=None,
+                                 end_recurring_period=None)
         self.event_occurrence = next(self.event.get_occurrences(
             self.event.start))
 
         # recurring event weekly on mondays over 6 weeks
-        self.rule = RuleFactory(
+        self.rule = mixer.blend(
+            'calendarium.Rule',
             name='weekly', frequency=FREQUENCIES['WEEKLY'],
             params=json.dumps({'byweekday': 0}))
-        self.rec_event = EventFactory(
+        self.rec_event = mixer.blend(
+            'calendarium.Event',
             rule=self.rule, start=now(),
-            set__end_recurring_period=41,
-            created_by=mixer.blend('auth.User'),
+            end_recurring_period=now() + timedelta(days=41),
         )
         self.rec_occurrence_list = [
             occ for occ in self.rec_event.get_occurrences(

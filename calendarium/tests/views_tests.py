@@ -5,37 +5,26 @@
 from django.utils.timezone import timedelta
 from django.test import TestCase
 
-from django_libs.tests.mixins import ViewTestMixin, ViewRequestFactoryTestMixin
+from django_libs.tests.mixins import ViewRequestFactoryTestMixin
 from mixer.backend.django import mixer
 
-from .factories import (
-    EventFactory,
-    EventCategoryFactory,
-    RuleFactory,
-)
 from .. import views
 from ..models import Event
 from ..utils import now
 
 
-class CalendariumRedirectViewTestCase(ViewTestMixin, TestCase):
+class CalendariumRedirectViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``CalendariumRedirectView`` view."""
-    longMessage = True
-
-    def get_view_name(self):
-        return 'calendar_current_month'
+    view_class = views.CalendariumRedirectView
 
     def test_view(self):
         resp = self.client.get(self.get_url())
-        self.assertEqual(resp.status_code, 301)
+        self.assertEqual(resp.status_code, 302)
 
 
-class MonthViewTestCase(ViewTestMixin, TestCase):
+class MonthViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``MonthView`` view class."""
-    longMessage = True
-
-    def get_view_name(self):
-        return 'calendar_month'
+    view_class = views.MonthView
 
     def get_view_kwargs(self):
         return {'year': self.year, 'month': self.month}
@@ -51,41 +40,27 @@ class MonthViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/calendar_month.html', msg=(
                 'Returned the wrong template.'))
-        self.is_callable(method='POST', data={'next': True})
-        self.is_callable(method='POST', data={'previous': True})
-        self.is_callable(method='POST', data={'today': True})
-
-        # AJAX call
-        resp = self.client.get(
-            self.get_url(), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(
-            resp.template_name[0], 'calendarium/partials/calendar_month.html',
-            msg=('Returned the wrong template for AJAX request.'))
+        self.is_postable(data={'next': True}, to_url_name='calendar_month')
+        self.is_postable(data={'previous': True}, to_url_name='calendar_month')
+        self.is_postable(data={'today': True}, to_url_name='calendar_month')
 
         # called with a invalid category pk
-        resp = self.client.get('{0}?category=abc'.format(self.get_url()))
-        self.assertEqual(resp.status_code, 200)
+        self.is_callable(data={'category': 'abc'})
 
         # called with a non-existant category pk
-        resp = self.client.get('{0}?category=999'.format(self.get_url()))
-        self.assertEqual(resp.status_code, 200)
+        self.is_callable(data={'category': '999'})
 
         # called with a category pk
-        category = EventCategoryFactory()
-        resp = self.client.get('{0}?category={1}'.format(self.get_url(),
-                                                         category.id))
-        self.assertEqual(resp.status_code, 200)
+        category = mixer.blend('calendarium.EventCategory')
+        self.is_callable(data={'category': category.pk})
 
         # called with wrong values
         self.is_not_callable(kwargs={'year': 2000, 'month': 15})
 
 
-class WeekViewTestCase(ViewTestMixin, TestCase):
+class WeekViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``WeekView`` view class."""
-    longMessage = True
-
-    def get_view_name(self):
-        return 'calendar_week'
+    view_class = views.WeekView
 
     def get_view_kwargs(self):
         return {'year': self.year, 'week': self.week}
@@ -101,24 +76,20 @@ class WeekViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/calendar_week.html', msg=(
                 'Returned the wrong template.'))
-        self.is_callable(method='POST', data={'next': True})
-        self.is_callable(method='POST', data={'previous': True})
-        self.is_callable(method='POST', data={'today': True})
+        self.is_postable(data={'next': True}, to_url_name='calendar_week')
+        self.is_postable(data={'previous': True}, to_url_name='calendar_week')
+        self.is_postable(data={'today': True}, to_url_name='calendar_week')
 
-        resp = self.client.get(
-            self.get_url(), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        resp = self.is_callable(ajax=True)
         self.assertEqual(
             resp.template_name[0], 'calendarium/partials/calendar_week.html',
             msg=('Returned the wrong template for AJAX request.'))
         self.is_not_callable(kwargs={'year': self.year, 'week': '60'})
 
 
-class DayViewTestCase(ViewTestMixin, TestCase):
+class DayViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``DayView`` view class."""
-    longMessage = True
-
-    def get_view_name(self):
-        return 'calendar_day'
+    view_class = views.DayView
 
     def get_view_kwargs(self):
         return {'year': self.year, 'month': self.month, 'day': self.day}
@@ -134,15 +105,9 @@ class DayViewTestCase(ViewTestMixin, TestCase):
         self.assertEqual(
             resp.template_name[0], 'calendarium/calendar_day.html', msg=(
                 'Returned the wrong template.'))
-        self.is_callable(method='POST', data={'next': True})
-        self.is_callable(method='POST', data={'previous': True})
-        self.is_callable(method='POST', data={'today': True})
-
-        resp = self.client.get(
-            self.get_url(), HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        self.assertEqual(
-            resp.template_name[0], 'calendarium/partials/calendar_day.html',
-            msg=('Returned the wrong template for AJAX request.'))
+        self.is_postable(data={'next': True}, to_url_name='calendar_day')
+        self.is_postable(data={'previous': True}, to_url_name='calendar_day')
+        self.is_postable(data={'today': True}, to_url_name='calendar_day')
         self.is_not_callable(kwargs={'year': self.year, 'month': '14',
                                      'day': self.day})
 
@@ -155,7 +120,7 @@ class EventUpdateViewTestCase(ViewRequestFactoryTestMixin, TestCase):
         return {'pk': self.event.pk}
 
     def setUp(self):
-        self.event = EventFactory()
+        self.event = mixer.blend('calendarium.Event')
         self.user = mixer.blend('auth.User', is_superuser=True)
 
     def test_view(self):
@@ -175,18 +140,15 @@ class EventCreateViewTestCase(ViewRequestFactoryTestMixin, TestCase):
         self.assertEqual(Event.objects.all().count(), 0)
 
 
-class EventDetailViewTestCase(ViewTestMixin, TestCase):
+class EventDetailViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``EventDetailView`` view class."""
-    longMessage = True
-
-    def get_view_name(self):
-        return 'calendar_event_detail'
+    view_class = views.EventDetailView
 
     def get_view_kwargs(self):
         return {'pk': self.event.pk}
 
     def setUp(self):
-        self.event = EventFactory()
+        self.event = mixer.blend('calendarium.Event')
 
     def test_view(self):
         self.is_callable()
@@ -194,8 +156,6 @@ class EventDetailViewTestCase(ViewTestMixin, TestCase):
 
 class OccurrenceViewTestCaseMixin(object):
     """Mixin to avoid repeating code for the Occurrence views."""
-    longMessage = True
-
     def get_view_kwargs(self):
         return {
             'pk': self.event.pk,
@@ -205,52 +165,40 @@ class OccurrenceViewTestCaseMixin(object):
         }
 
     def setUp(self):
-        self.rule = RuleFactory(name='daily')
-        self.start = now() - timedelta(days=1)
-        self.end = now() + timedelta(days=5)
-        self.event = EventFactory(
+        self.rule = mixer.blend('calendarium.Rule', name='daily')
+        self.event = mixer.blend(
+            'calendarium.Event', created_by=mixer.blend('auth.User'),
+            start=now() - timedelta(days=1), end=now() + timedelta(days=5),
             rule=self.rule, end_recurring_period=now() + timedelta(days=2))
-
-    def test_view(self):
-        # regular test with a valid request
-        self.is_callable()
 
 
 class OccurrenceDeleteViewTestCase(
-        OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):
+        OccurrenceViewTestCaseMixin, ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``OccurrenceDeleteView`` view class."""
-    def get_view_name(self):
-        return 'calendar_occurrence_delete'
+    view_class = views.OccurrenceDeleteView
 
     def test_deletion(self):
-        self.is_callable(method='post')
-
-        self.is_callable(kwargs={
-            'pk': self.event.pk,
-            'year': self.event.start.date().year,
-            'month': self.event.start.date().month,
-            'day': self.event.start.date().day + 1,
-        }, message=('Should be callable, if date in period.'))
-
         self.is_not_callable(kwargs={
             'pk': 5,
             'year': self.event.start.date().year,
             'month': self.event.start.date().month,
             'day': self.event.start.date().day,
-        }, message=('Wrong event pk.'))
+        }, user=self.event.created_by, msg=('Wrong event pk.'))
 
         self.is_not_callable(kwargs={
             'pk': self.event.pk,
             'year': self.event.start.date().year,
             'month': '999',
             'day': self.event.start.date().day,
-        }, message=('Wrong dates.'))
+        }, user=self.event.created_by, msg=('Wrong dates.'))
 
-        new_rule = RuleFactory(name='weekly', frequency='WEEKLY')
-        new_event = EventFactory(
+        new_rule = mixer.blend('calendarium.Rule', name='weekly',
+                               frequency='WEEKLY')
+        new_event = mixer.blend(
+            'calendarium.Event',
             rule=new_rule,
             end_recurring_period=now() + timedelta(days=200),
-            set__start=-5,
+            start=now() - timedelta(hours=5),
         )
         test_date = self.event.start.date() - timedelta(days=5)
         self.is_not_callable(kwargs={
@@ -258,40 +206,36 @@ class OccurrenceDeleteViewTestCase(
             'year': test_date.year,
             'month': test_date.month,
             'day': test_date.day,
-        }, message=('No occurrence available for this day.'))
+        }, user=self.event.created_by, msg=(
+            'No occurrence available for this day.'))
+
+        self.is_callable(user=self.event.created_by)
+        self.is_postable(user=self.event.created_by, to='/',
+                         data={'decision': 'this one'})
 
 
 class OccurrenceDetailViewTestCase(
-        OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):
+        OccurrenceViewTestCaseMixin, ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``OccurrenceDetailView`` view class."""
-    def get_view_name(self):
-        return 'calendar_occurrence_detail'
+    view_class = views.OccurrenceDetailView
 
 
 class OccurrenceUpdateViewTestCase(
-        OccurrenceViewTestCaseMixin, ViewTestMixin, TestCase):
+        OccurrenceViewTestCaseMixin, ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``OccurrenceUpdateView`` view class."""
-    def get_view_name(self):
-        return 'calendar_occurrence_update'
+    view_class = views.OccurrenceUpdateView
 
 
-class UpcomingEventsAjaxViewTestCase(ViewTestMixin, TestCase):
+class UpcomingEventsAjaxViewTestCase(ViewRequestFactoryTestMixin, TestCase):
     """Tests for the ``UpcomingEventsAjaxView`` view class."""
-    def get_view_name(self):
-        return 'calendar_upcoming_events'
+    view_class = views.UpcomingEventsAjaxView
 
     def test_view(self):
-        self.should_be_callable_when_anonymous()
+        self.is_callable()
 
     def test_view_with_count(self):
-        url = self.get_url()
-        url = url + '?count=5'
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
+        self.is_callable(data={'count': 5})
 
     def test_view_with_category(self):
-        cat = EventCategoryFactory()
-        url = self.get_url()
-        url = url + '?category={0}'.format(cat.slug)
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, 200)
+        cat = mixer.blend('calendarium.EventCategory')
+        self.is_callable(data={'category': cat.slug})

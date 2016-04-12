@@ -17,8 +17,8 @@ We added some basic bootstrap styles to start with. If you're not using
 Bootstrap we recommend to build your own styles, otherwise try:
 
 ```html
-{% load static %}
-<link rel="stylesheet" href="{% static "calendarium/css/bootstrap.min.css" %}">
+{% load staticfiles %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
 <link rel="stylesheet" href="{% static "calendarium/css/calendar.css" %}">
 ```
 
@@ -31,7 +31,7 @@ If you want your calendar to start on a different date, you can set the
 calendar should add or subtract from the start day of the week. Most common
 case is probably, that you want your calendar week to start on sunday in which
 case you would add the following to your settings::
- 
+
 ```python
 CALENDARIUM_SHIFT_WEEKSTART = -1
 ```
@@ -65,10 +65,10 @@ tracker.
 Compatibility
 -------------
 
-    py\dj   |  1.5  |  1.6  |  1.7  |  1.8  |
-    -----------------------------------------
-    2.6     |   X   |   X   |   X   |   X   |
-    2.7     |   X   |  PASS |  PASS |  PASS |
-    3.2     |   X   |  PASS |  PASS |  PASS |
-    3.4     |  PASS |  PASS |  PASS |  PASS |
-    -----------------------------------------
+    py\dj   |  1.5  |  1.6  |  1.7  |  1.8  |  1.9  |
+    -------------------------------------------------
+    2.6     |   X   |   X   |   X   |   X   |   X   |
+    2.7     |   X   |  PASS |  PASS |  PASS |  PASS |
+    3.2     |   X   |  PASS |  PASS |  PASS |  PASS |
+    3.4     |  PASS |  PASS |  PASS |  PASS |  PASS |
+    -------------------------------------------------

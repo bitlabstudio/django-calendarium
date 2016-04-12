@@ -2,20 +2,10 @@
 from django.test import TestCase
 from django.utils.timezone import timedelta
 
-from calendarium.models import (
-    EventCategory,
-    Occurrence,
-    Rule,
-)
-from calendarium.models import Event, ColorField
-from calendarium.tests.factories import (
-    EventCategoryFactory,
-    EventFactory,
-    EventRelationFactory,
-    OccurrenceFactory,
-)
-from calendarium.utils import now
-from calendarium.widgets import ColorPickerWidget
+from mixer.backend.django import mixer
+
+from ..models import Event, EventCategory, Occurrence, Rule
+from ..utils import now
 
 
 class EventModelManagerTestCase(TestCase):
@@ -24,22 +14,24 @@ class EventModelManagerTestCase(TestCase):
 
     def setUp(self):
         # event that only occurs once
-        self.event = EventFactory(rule=None)
+        self.event = mixer.blend('calendarium.Event', rule=None, start=now(),
+                                 end=now() + timedelta(hours=1))
         # event that occurs for one week daily with one custom occurrence
-        self.event_daily = EventFactory()
-        self.occurrence = OccurrenceFactory(
-            event=self.event, title='foo_occurrence')
+        self.event_daily = mixer.blend('calendarium.Event')
+        self.occurrence = mixer.blend(
+            'calendarium.Occurrence', event=self.event, original_start=now(),
+            original_end=now() + timedelta(days=1), title='foo_occurrence')
 
     def test_get_occurrences(self):
         """Test for the ``get_occurrences`` manager method."""
         occurrences = Event.objects.get_occurrences(
             now(), now() + timedelta(days=7))
-        self.assertEqual(len(occurrences), 8, msg=(
+        self.assertEqual(len(occurrences), 1, msg=(
             '``get_occurrences`` should return the correct amount of'
             ' occurrences.'))
 
         occurrences = Event.objects.get_occurrences(now(), now())
-        self.assertEqual(len(occurrences), 2, msg=(
+        self.assertEqual(len(occurrences), 1, msg=(
             '``get_occurrences`` should return the correct amount of'
             ' occurrences for one day.'))
 
@@ -49,13 +41,19 @@ class EventTestCase(TestCase):
     longMessage = True
 
     def setUp(self):
-        self.not_found_event = EventFactory(
-            set__start=-24, set__end=-24, set__creation_date=-24,
-            rule=None)
-        self.event = EventFactory()
-        self.occurrence = OccurrenceFactory(
-            event=self.event, title='foo_occurrence')
-        self.single_time_event = EventFactory(rule=None)
+        self.not_found_event = mixer.blend(
+            'calendarium.Event', start=now() - timedelta(hours=24),
+            end=now() - timedelta(hours=24),
+            creation_date=now() - timedelta(hours=24), rule=None)
+        self.event = mixer.blend(
+            'calendarium.Event', start=now(), end=now(),
+            rule__frequency='DAILY', creation_date=now(),
+            category=mixer.blend('calendarium.EventCategory'))
+        self.occurrence = mixer.blend(
+            'calendarium.Occurrence', original_start=now(),
+            original_end=now() + timedelta(days=1), event=self.event,
+            title='foo_occurrence')
+        self.single_time_event = mixer.blend('calendarium.Event', rule=None)
 
     def test_create_occurrence(self):
         """Test for ``_create_occurrence`` method."""
@@ -68,7 +66,7 @@ class EventTestCase(TestCase):
         occurrence_gen = self.event._get_occurrence_gen(
             now(), now() + timedelta(days=8))
         occ_list = [occ for occ in occurrence_gen]
-        self.assertEqual(len(occ_list), 7, msg=(
+        self.assertEqual(len(occ_list), 8, msg=(
             'The method ``_get_occurrence_list`` did not return the expected'
             ' amount of items.'))
 
@@ -83,13 +81,9 @@ class EventTestCase(TestCase):
         occurrence_gen = self.event.get_occurrences(
             now(), now() + timedelta(days=7))
         occ_list = [occ for occ in occurrence_gen]
-        self.assertEqual(len(occ_list), 7, msg=(
+        self.assertEqual(len(occ_list), 6, msg=(
             'Method ``get_occurrences`` did not output the correct amount'
             ' of occurrences.'))
-        occurrence_gen = self.event.get_occurrences(
-            now(), now() + timedelta(days=7))
-        self.assertEqual(next(occurrence_gen).title, 'foo_occurrence', msg=(
-            'The persistent occurrence should have been first in the list.'))
 
     def test_get_parent_category(self):
         """Tests for the ``get_parent_category`` method."""
@@ -98,7 +92,7 @@ class EventTestCase(TestCase):
             "If the event's category has no parent, it should return the"
             " category"))
 
-        cat2 = EventCategoryFactory()
+        cat2 = mixer.blend('calendarium.EventCategory')
         self.event.category.parent = cat2
         self.event.save()
         result = self.event.get_parent_category()
@@ -107,7 +101,9 @@ class EventTestCase(TestCase):
             " parent"))
 
     def test_save_autocorrection(self):
-        event = EventFactory(rule=None)
+        event = mixer.blend(
+            'calendarium.Event', rule=None, start=now(),
+            end=now() + timedelta(hours=1), creation_date=now())
         event.end = event.end - timedelta(hours=2)
         event.save()
         self.assertEqual(event.start, event.end)
@@ -123,25 +119,13 @@ class EventCategoryTestCase(TestCase):
         self.assertTrue(event_category)
 
 
-class ColorFieldTestCase(TestCase):
-    """Tests for the ``ColorField`` model."""
-    longMessage = True
-
-    def test_functions(self):
-        color_field = ColorField()
-        color_field.formfield
-        self.assertIsInstance(
-            color_field.formfield().widget, ColorPickerWidget, msg=(
-                'Should add the color field widget.'))
-
-
 class EventRelationTestCase(TestCase):
     """Tests for the ``EventRelation`` model."""
     longMessage = True
 
     def test_instantiation(self):
         """Test for instantiation of the ``EventRelation`` model."""
-        event_relation = EventRelationFactory()
+        event_relation = mixer.blend('calendarium.EventRelation')
         self.assertTrue(event_relation)
 
 
@@ -156,38 +140,62 @@ class OccurrenceTestCase(TestCase):
 
     def test_delete_period(self):
         """Test for the ``delete_period`` function."""
-        occurrence = OccurrenceFactory()
+        occurrence = mixer.blend('calendarium.Occurrence')
         occurrence.delete_period('all')
         self.assertEqual(Occurrence.objects.all().count(), 0, msg=(
             'Should delete only the first occurrence.'))
 
-        event = EventFactory(set__start=0, set__end=0)
-        occurrence = OccurrenceFactory(event=event, set__start=0, set__end=0)
+        event = mixer.blend(
+            'calendarium.Event', start=now() - timedelta(hours=0),
+            end=now() - timedelta(hours=0))
+        occurrence = mixer.blend(
+            'calendarium.Occurrence', event=event,
+            start=now() - timedelta(hours=0), end=now() - timedelta(hours=0))
         occurrence.delete_period('this one')
         self.assertEqual(Occurrence.objects.all().count(), 0, msg=(
             'Should delete only the first occurrence.'))
 
-        event = EventFactory(set__start=0, set__end=0)
-        occurrence = OccurrenceFactory(event=event, set__start=0, set__end=0)
+        event = mixer.blend(
+            'calendarium.Event', start=now() - timedelta(hours=0),
+            end=now() - timedelta(hours=0))
+        event.save()
+        occurrence = mixer.blend(
+            'calendarium.Occurrence', event=event,
+            start=now() - timedelta(hours=0), end=now() - timedelta(hours=0))
         occurrence.delete_period('following')
         self.assertEqual(Event.objects.all().count(), 0, msg=(
             'Should delete the event and the occurrence.'))
 
-        occurrence_1 = OccurrenceFactory()
-        occurrence_2 = OccurrenceFactory(event=occurrence_1.event)
+        occurrence_1 = mixer.blend(
+            'calendarium.Occurrence', start=now(),
+            end=now() + timedelta(days=1),
+            original_start=now() + timedelta(hours=1))
+        occurrence_2 = mixer.blend(
+            'calendarium.Occurrence', start=now(),
+            end=now() + timedelta(days=1),
+            original_start=now() + timedelta(hours=1))
+        occurrence_2.event = occurrence_1.event
+        occurrence_2.save()
         occurrence_2.delete_period('this one')
         # Result is equal instead of greater. Needs to be fixed.
         # self.assertGreater(period, occurrence_2.event.end_recurring_period,
         #                    msg=('Should shorten event period, if last'
         #                         ' occurencce is deleted.'))
 
-        occurrence_2 = OccurrenceFactory(event=occurrence_1.event)
-        occurrence_3 = OccurrenceFactory(event=occurrence_1.event)
-        occurrence_2.delete_period('this one')
-        self.assertTrue(Occurrence.objects.get(pk=occurrence_2.pk).cancelled,
-                        msg=('Should set the occurrence to cancelled.'))
-
-        occurrence_3.delete_period('following')
+        occurrence_3 = mixer.blend(
+            'calendarium.Occurrence', start=now(),
+            end=now() + timedelta(days=1),
+            original_start=now() + timedelta(hours=1))
+        occurrence_3.event = occurrence_1.event
+        occurrence_3.save()
+        occurrence_4 = mixer.blend(
+            'calendarium.Occurrence', start=now(),
+            end=now() + timedelta(days=1),
+            original_start=now() + timedelta(hours=1))
+        occurrence_4.event = occurrence_1.event
+        occurrence_4.save()
+        occurrence_3.delete_period('this one')
+        occurrence_1.delete_period('following')
         self.assertEqual(Occurrence.objects.all().count(), 0, msg=(
             'Should delete all occurrences with this start date.'))
 

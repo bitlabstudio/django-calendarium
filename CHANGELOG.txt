@@ -1,5 +1,8 @@
 === ongoing ===
 
+- Prepared app for Django1.9 and Python3.5
+- Replaced factory_boy with mixer
+
 === 1.3.3 ===
 
 - fixed AttributeError for EventCategory

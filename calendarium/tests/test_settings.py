@@ -1,12 +1,10 @@
 """Settings that need to be set in order to run the tests."""
-import logging
 import os
 
 DEBUG = True
 USE_TZ = True
 TIME_ZONE = 'Asia/Singapore'
 
-logging.getLogger("factory").setLevel(logging.WARN)
 
 EXTERNAL_APPS = [
     'django.contrib.admin',
@@ -18,7 +16,7 @@ EXTERNAL_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
     'django.contrib.sites',
-    'django_nose',
+    'easy_thumbnails',
     'filer',
 ]
 
@@ -31,8 +29,6 @@ TEST_APPS = [
 ]
 
 INSTALLED_APPS = EXTERNAL_APPS + INTERNAL_APPS + TEST_APPS
-
-AUTH_USER_MODEL = 'auth.User'
 
 SITE_ID = 1
 
@@ -56,14 +52,20 @@ STATICFILES_DIRS = (
     os.path.join(__file__, 'test_static'),
 )
 
-TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), '../templates'),
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.request',
-)
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',
+    'APP_DIRS': True,
+    'DIRS': [os.path.join(os.path.dirname(__file__), '../templates')],
+    'OPTIONS': {
+        'context_processors': (
+            'django.contrib.auth.context_processors.auth',
+            'django.template.context_processors.i18n',
+            'django.template.context_processors.request',
+            'django.template.context_processors.media',
+            'django.template.context_processors.static',
+        )
+    }
+}]
 
 # Django 1.8 compatibility
 MIDDLEWARE_CLASSES = [
@@ -75,13 +77,3 @@ MIDDLEWARE_CLASSES = [
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.MD5PasswordHasher',
 )
-
-
-class DisableMigrations(object):
-    def __contains__(self, item):
-        return True
-
-    def __getitem__(self, item):
-        return "notmigrations"
-
-MIGRATION_MODULES = DisableMigrations()

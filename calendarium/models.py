@@ -8,47 +8,24 @@ https://github.com/thauber/django-schedule/tree/master/schedule/models
 
 """
 import json
-from dateutil import rrule
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
-from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _
 
-from calendarium.constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
-from calendarium.utils import OccurrenceReplacer
-from calendarium.widgets import ColorPickerWidget
+from dateutil import rrule
+from django_libs.models import ColorField
 from filer.fields.image import FilerImageField
-try:
-    from south.modelsinspector import add_introspection_rules
-    HAS_SOUTH = True
-except ImportError:
-    HAS_SOUTH = False
 
-
-class ColorField(models.CharField):
-    """Custom color field to display a color picker."""
-    def __init__(self, *args, **kwargs):
-        kwargs['max_length'] = 6
-        super(ColorField, self).__init__(*args, **kwargs)
-        self.validators.append(RegexValidator(
-            regex='^([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$',
-            message='Only RGB color model inputs allowed, like 00000',
-            code='nomatch'))
-
-    def formfield(self, **kwargs):
-        kwargs['widget'] = ColorPickerWidget
-        return super(ColorField, self).formfield(**kwargs)
-
-
-if HAS_SOUTH:
-    add_introspection_rules([], ["^calendarium\.models\.ColorField"])
+from .constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
+from .utils import OccurrenceReplacer
 
 
 class EventModelManager(models.Manager):
@@ -92,6 +69,7 @@ class EventModelManager(models.Manager):
         return sorted(all_occurrences, key=lambda x: x.start)
 
 
+@python_2_unicode_compatible
 class EventModelMixin(models.Model):
     """
     Abstract base class to prevent code duplication.
@@ -119,9 +97,6 @@ class EventModelMixin(models.Model):
         verbose_name=_('Description'),
         blank=True,
     )
-
-    def __unicode__(self):
-        return self.title
 
     def __str__(self):
         return self.title
@@ -286,6 +261,7 @@ class Event(EventModelMixin):
             return rrule.rrule(eval(frequency), dtstart=self.start, **params)
 
 
+@python_2_unicode_compatible
 class EventCategory(models.Model):
     """
     The category of an event.
@@ -318,9 +294,6 @@ class EventCategory(models.Model):
         null=True, blank=True,
     )
 
-    def __unicode__(self):
-        return self.name
-
     def __str__(self):
         return self.name
 
@@ -330,6 +303,7 @@ class EventCategory(models.Model):
         return super(EventCategory, self).save(*args, **kwargs)
 
 
+@python_2_unicode_compatible
 class EventRelation(models.Model):
     """
     This class allows to relate additional or external data to an event.
@@ -367,13 +341,10 @@ class EventRelation(models.Model):
         blank=True, null=True,
     )
 
-    def __unicode__(self):
-        return 'type "{0}" for "{1}"'.format(
-            self.relation_type, self.event.title)
-    
     def __str__(self):
-        return 'type "{0}" for "{1}"'.format(
+        return u'type "{0}" for "{1}"'.format(
             self.relation_type, self.event.title)
+
 
 class Occurrence(EventModelMixin):
     """
@@ -468,6 +439,7 @@ class Occurrence(EventModelMixin):
                 'month': self.start.month, 'day': self.start.day})
 
 
+@python_2_unicode_compatible
 class Rule(models.Model):
     """
     This defines the rule by which an event will recur.
@@ -498,9 +470,6 @@ class Rule(models.Model):
         verbose_name=_("params"),
         blank=True, null=True,
     )
-
-    def __unicode__(self):
-        return self.name
 
     def __str__(self):
         return self.name

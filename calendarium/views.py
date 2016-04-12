@@ -29,12 +29,6 @@ from .utils import monday_of_week
 class CategoryMixin(object):
     """Mixin to handle category filtering by category id."""
     def dispatch(self, request, *args, **kwargs):
-        if hasattr(self, 'category'):
-            # If we already have a category on the class, then we probably
-            # already went through the CategorySlugMixin
-            return super(CategoryMixin, self).dispatch(
-                request, *args, **kwargs)
-
         if request.GET.get('category'):
             try:
                 category_id = int(request.GET.get('category'))
@@ -54,21 +48,10 @@ class CategoryMixin(object):
         return context
 
 
-class CategorySlugMixin(CategoryMixin):
-    """Mixin to handle category filtering by category slug."""
-    def dispatch(self, request, *args, **kwargs):
-        if request.GET.get('category'):
-            try:
-                self.category = EventCategory.objects.get(
-                    slug=request.GET.get('category'))
-            except EventCategory.DoesNotExist:
-                pass
-        return super(CategorySlugMixin, self).dispatch(
-            request, *args, **kwargs)
-
-
 class CalendariumRedirectView(RedirectView):
     """View to redirect to the current month view."""
+    permanent = False
+
     def get_redirect_url(self, **kwargs):
         return reverse('calendar_month', kwargs={'year': now().year,
                                                  'month': now().month})
