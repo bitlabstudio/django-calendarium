@@ -10,17 +10,16 @@ For further information, like requirements, please check out the
 [django-calendarium documentation](https://django-calendarium.readthedocs.org/)
 on readthedocs.
 
-![Calendar Example](https://raw.githubusercontent.com/bitmazk/django-calendarium/master/calendar_view.png "Calendar Example")
+.. image:: https://raw.githubusercontent.com/bitmazk/django-calendarium/master/calendar_view.png
+   :alt: Calendar Example
 
 
 We added some basic bootstrap styles to start with. If you're not using
-Bootstrap we recommend to build your own styles, otherwise try:
+Bootstrap we recommend to build your own styles, otherwise try::
 
-```html
-{% load staticfiles %}
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-<link rel="stylesheet" href="{% static "calendarium/css/calendar.css" %}">
-```
+    {% load staticfiles %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static "calendarium/css/calendar.css" %}">
 
 
 Settings
@@ -32,9 +31,7 @@ calendar should add or subtract from the start day of the week. Most common
 case is probably, that you want your calendar week to start on sunday in which
 case you would add the following to your settings::
 
-```python
-CALENDARIUM_SHIFT_WEEKSTART = -1
-```
+    CALENDARIUM_SHIFT_WEEKSTART = -1
 
 Extending the app
 -----------------
