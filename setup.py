@@ -31,5 +31,6 @@ setup(
         'django>=1.6',
         'python-dateutil',
         'django-filer',
+        'django-libs',
     ],
 )

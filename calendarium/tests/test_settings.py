@@ -18,6 +18,7 @@ EXTERNAL_APPS = [
     'django.contrib.sites',
     'easy_thumbnails',
     'filer',
+    'django_libs',
 ]
 
 INTERNAL_APPS = [
