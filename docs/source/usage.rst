@@ -13,6 +13,10 @@ if you want to use occurences.
 Template Tags
 -------------
 
+When using the calendarium template tags in your template, include::
+
+    {% load calendarium_tags %}
+
 We provide a template tag to render a defined amount of upcoming occurrences::
 
     {% render_upcoming_events %}
