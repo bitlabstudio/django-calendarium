@@ -1,6 +1,7 @@
 """Tests for the models of the ``calendarium`` app."""
 from django.test import TestCase
 from django.utils.timezone import timedelta
+from django.template.defaultfilters import slugify
 
 from mixer.backend.django import mixer
 
@@ -49,11 +50,35 @@ class EventTestCase(TestCase):
             'calendarium.Event', start=now(), end=now(),
             rule__frequency='DAILY', creation_date=now(),
             category=mixer.blend('calendarium.EventCategory'))
+        self.event_wp = mixer.blend(
+            'calendarium.Event', start=now(), end=now(),
+            rule__frequency='DAILY', creation_date=now(),
+            category=mixer.blend('calendarium.EventCategory'),
+            end_recurring_period=now() + timedelta(days=2))
         self.occurrence = mixer.blend(
             'calendarium.Occurrence', original_start=now(),
             original_end=now() + timedelta(days=1), event=self.event,
             title='foo_occurrence')
         self.single_time_event = mixer.blend('calendarium.Event', rule=None)
+
+    def test_get_title(self):
+        """Test for ``__str__`` method."""
+        title = "The Title"
+        event = mixer.blend(
+            'calendarium.Event', start=now(), end=now(),
+            rule__frequency='DAILY', creation_date=now(),
+            title=title)
+        self.assertEqual(title, str(event), msg=(
+            'Method ``__str__`` did not output event title.'))
+
+    def test_get_absolute_url(self):
+        """Test for ``get_absolute_url`` method."""
+        event = mixer.blend(
+            'calendarium.Event', start=now(), end=now(),
+            rule__frequency='DAILY', creation_date=now())
+        event.save()
+        self.assertTrue(str(event.pk) in str(event.get_absolute_url()), msg=(
+            'Method ``get_absolute_url`` did not contain event id.'))
 
     def test_create_occurrence(self):
         """Test for ``_create_occurrence`` method."""
@@ -69,7 +94,12 @@ class EventTestCase(TestCase):
         self.assertEqual(len(occ_list), 8, msg=(
             'The method ``_get_occurrence_list`` did not return the expected'
             ' amount of items.'))
-
+        occurrence_gen = self.event_wp._get_occurrence_gen(
+            now(), now() + timedelta(days=8))
+        occ_list = [occ for occ in occurrence_gen]
+        self.assertEqual(len(occ_list), 2, msg=(
+            'The method ``_get_occurrence_list`` did not return the expected'
+            ' amount of items.'))
         occurrence_gen = self.not_found_event._get_occurrence_gen(
             now(), now() + timedelta(days=8))
         occ_list = [occ for occ in occurrence_gen]
@@ -117,6 +147,21 @@ class EventCategoryTestCase(TestCase):
         """Test for instantiation of the ``EventCategory`` model."""
         event_category = EventCategory()
         self.assertTrue(event_category)
+
+    def test_get_name(self):
+        """Test for ``__str__`` method."""
+        name = "The Name"
+        event_category = EventCategory(name=name)
+        self.assertEqual(name, str(event_category), msg=(
+            'Method ``__str__`` did not output event category name.'))
+
+    def test_get_slug(self):
+        """Test slug in ``save`` method."""
+        name = "The Name"
+        event_category = EventCategory(name=name)
+        event_category.save()
+        self.assertEqual(slugify(name), str(event_category.slug), msg=(
+            'Method ``save`` did not set event category slug as expected.'))
 
 
 class EventRelationTestCase(TestCase):
