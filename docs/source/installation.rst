@@ -19,11 +19,11 @@ Add ``calendarium`` (and the ``filer`` dependencies) to your ``INSTALLED_APPS``:
         'calendarium',
     )
 
-Add ``django.core.context_processors.request`` to your ``TEMPLATE_CONTEXT_PROCESSORS``::
+Add ``django.template.context_processors.request`` to your ``TEMPLATE_CONTEXT_PROCESSORS``::
 
     TEMPLATE_CONTEXT_PROCESSORS = (
         ...,
-        'django.core.context_processors.request',
+        'django.template.context_processors.request',
     )
 
 Add the urls to your main ``urls.py``::
