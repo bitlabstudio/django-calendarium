@@ -8,3 +8,4 @@ python-dateutil
 django-filer
 django-libs
 Pillow
+pytz
