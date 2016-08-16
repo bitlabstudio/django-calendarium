@@ -24,7 +24,7 @@ from dateutil import rrule
 from django_libs.models import ColorField
 from filer.fields.image import FilerImageField
 
-from .constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS
+from .constants import FREQUENCY_CHOICES, OCCURRENCE_DECISIONS, FREQUENCIES
 from .utils import OccurrenceReplacer
 
 
@@ -210,7 +210,18 @@ class Event(EventModelMixin):
         else:
             # check if event is in the period
             if (not end or self.start < end) and self.end >= start:
-                yield self._create_occurrence(self.start, self.end)
+                # making start date generator
+                occ_start_gen = self._get_date_gen(
+                    rrule.rrule(eval('rrule.{}'.format(FREQUENCIES['DAILY'])),
+                                dtstart=self.start),
+                    start - length, self.end)
+
+                # chosing the first item from the generator to initiate
+                occ_start = next(occ_start_gen)
+                while not end or (end and occ_start <= end):
+                    occ_end = occ_start + length
+                    yield self._create_occurrence(occ_start, occ_end)
+                    occ_start = next(occ_start_gen)
 
     def get_occurrences(self, start, end=None):
         """Returns all occurrences from start to end."""

@@ -250,6 +250,9 @@ class EventMixin(object):
     def dispatch(self, request, *args, **kwargs):
         return super(EventMixin, self).dispatch(request, *args, **kwargs)
 
+    def get_success_url(self):
+        return reverse('calendar_event_detail', kwargs={'pk': self.object.pk})
+
 
 class EventUpdateView(EventMixin, UpdateView):
     """View to update information of an event."""
@@ -263,7 +266,8 @@ class EventCreateView(EventMixin, CreateView):
 
 class EventDeleteView(EventMixin, DeleteView):
     """View to delete an event."""
-    pass
+    def get_success_url(self):
+        return reverse('calendar_current_month')
 
 
 class OccurrenceViewMixin(object):
@@ -307,6 +311,14 @@ class OccurrenceViewMixin(object):
         kwargs = super(OccurrenceViewMixin, self).get_form_kwargs()
         kwargs.update({'initial': model_to_dict(self.object)})
         return kwargs
+
+    def get_success_url(self):
+        return reverse('calendar_occurrence_update', kwargs={
+            'pk': self.object.event.pk,
+            'year': self.object.start.year,
+            'month': self.object.start.month,
+            'day': self.object.start.day,
+        })
 
 
 class OccurrenceDeleteView(OccurrenceViewMixin, DeleteView):

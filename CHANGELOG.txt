@@ -3,6 +3,7 @@
  - Corrected instructions for contributions
  - Added some instruction for template tags
  - Added some test cases for extra coverage
+ - Fixed occurrence generation for events with multiple days
 
 === 1.3.4 ===
 
