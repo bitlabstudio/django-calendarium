@@ -217,11 +217,14 @@ class Event(EventModelMixin):
                     start - length, self.end)
 
                 # chosing the first item from the generator to initiate
-                occ_start = next(occ_start_gen)
-                while not end or (end and occ_start <= end):
-                    occ_end = occ_start + length
-                    yield self._create_occurrence(occ_start, occ_end)
+                try:
                     occ_start = next(occ_start_gen)
+                    while not end or (end and occ_start <= end):
+                        occ_end = occ_start + length
+                        yield self._create_occurrence(occ_start, occ_end)
+                        occ_start = next(occ_start_gen)
+                except StopIteration:
+                    pass
 
     def get_occurrences(self, start, end=None):
         """Returns all occurrences from start to end."""

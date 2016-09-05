@@ -232,7 +232,13 @@ class DayView(CategoryMixin, TemplateView):
         ctx = self.get_category_context()
         occurrences = Event.objects.get_occurrences(
             self.date, self.date, ctx.get('current_category'))
-        ctx.update({'date': self.date, 'occurrences': occurrences})
+        ctx.update({
+            'date': self.date,
+            'occurrences': filter(
+                lambda occ, date=self.date: occ.start.replace(
+                    hour=0, minute=0, second=0, microsecond=0) == self.date,
+                occurrences),
+        })
         return ctx
 
 
