@@ -19,6 +19,7 @@ from django.template.defaultfilters import slugify
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _
+import itertools
 
 from dateutil import rrule
 from django_libs.models import ColorField
@@ -155,6 +156,13 @@ class Event(EventModelMixin):
         verbose_name=_('Title'),
     )
 
+    slug = models.SlugField(
+        default='default',
+        max_length=256,
+        verbose_name=_('Slug'),
+        unique=True,
+    )
+
     image = FilerImageField(
         verbose_name=_('Image'),
         related_name='calendarium_event_images',
@@ -162,6 +170,17 @@ class Event(EventModelMixin):
     )
 
     objects = EventModelManager()
+
+    def save(self, *args, **kwargs):
+        if self.slug != 'default':
+            return super(Event, self).save(*args, **kwargs)
+        else:
+            self.slug = orig = slugify(self.title)
+            for x in itertools.count(1):
+                if not Event.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
+                    break
+                self.slug = '%s-%d' % (orig, x)
+            return super(Event, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('calendar_event_detail', kwargs={'pk': self.pk})

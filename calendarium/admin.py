@@ -14,8 +14,9 @@ class EventAdmin(admin.ModelAdmin):
     """Custom admin for the ``Event`` model."""
     model = Event
     fields = (
-        'title', 'start', 'end', 'description', 'category', 'created_by',
+        'title', 'slug', 'start', 'end', 'description', 'category', 'created_by',
         'rule', 'end_recurring_period', )
+    prepopulated_fields = {"slug": ("title",)}
     list_display = (
         'title', 'start', 'end', 'category', 'created_by', 'rule',
         'end_recurring_period', )
