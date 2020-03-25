@@ -201,7 +201,7 @@ class Event(EventModelMixin):
                 self.get_rrule_object(),
                 start - length, end)
 
-            # chosing the first item from the generator to initiate
+            # choosing the first item from the generator to initiate
             occ_start = next(occ_start_gen)
             while not end or (end and occ_start <= end):
                 occ_end = occ_start + length
@@ -216,7 +216,7 @@ class Event(EventModelMixin):
                                 dtstart=self.start),
                     start - length, self.end)
 
-                # chosing the first item from the generator to initiate
+                # choosing the first item from the generator to initiate
                 try:
                     occ_start = next(occ_start_gen)
                     while not end or (end and occ_start <= end):
