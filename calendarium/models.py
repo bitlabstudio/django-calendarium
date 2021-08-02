@@ -12,11 +12,10 @@ import json
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import slugify
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import timedelta
 from django.utils.translation import ugettext_lazy as _
 
@@ -69,7 +68,6 @@ class EventModelManager(models.Manager):
         return sorted(all_occurrences, key=lambda x: x.start)
 
 
-@python_2_unicode_compatible
 class EventModelMixin(models.Model):
     """
     Abstract base class to prevent code duplication.
@@ -130,6 +128,7 @@ class Event(EventModelMixin):
         verbose_name=_('Created by'),
         related_name='events',
         blank=True, null=True,
+        on_delete=models.SET_NULL,
     )
 
     category = models.ForeignKey(
@@ -137,12 +136,14 @@ class Event(EventModelMixin):
         verbose_name=_('Category'),
         related_name='events',
         null=True, blank=True,
+        on_delete=models.SET_NULL,
     )
 
     rule = models.ForeignKey(
         'Rule',
         verbose_name=_('Rule'),
         blank=True, null=True,
+        on_delete=models.SET_NULL,
     )
 
     end_recurring_period = models.DateTimeField(
@@ -159,6 +160,7 @@ class Event(EventModelMixin):
         verbose_name=_('Image'),
         related_name='calendarium_event_images',
         null=True, blank=True,
+        on_delete=models.SET_NULL,
     )
 
     objects = EventModelManager()
@@ -259,7 +261,10 @@ class Event(EventModelMixin):
                 final_occ = estimated_occ
             if not final_occ.cancelled:
                 yield final_occ
-            occ = next(occurrence_gen)
+            try:
+                occ = next(occurrence_gen)
+            except StopIteration:
+                break
 
     def get_parent_category(self):
         """Returns the main category of this event."""
@@ -275,7 +280,6 @@ class Event(EventModelMixin):
             return rrule.rrule(eval(frequency), dtstart=self.start, **params)
 
 
-@python_2_unicode_compatible
 class EventCategory(models.Model):
     """
     The category of an event.
@@ -306,6 +310,7 @@ class EventCategory(models.Model):
         verbose_name=_('Parent'),
         related_name='parents',
         null=True, blank=True,
+        on_delete=models.SET_NULL,
     )
 
     def __str__(self):
@@ -317,7 +322,6 @@ class EventCategory(models.Model):
         return super(EventCategory, self).save(*args, **kwargs)
 
 
-@python_2_unicode_compatible
 class EventRelation(models.Model):
     """
     This class allows to relate additional or external data to an event.
@@ -336,10 +340,12 @@ class EventRelation(models.Model):
     event = models.ForeignKey(
         'Event',
         verbose_name=_("Event"),
+        on_delete=models.CASCADE,
     )
 
     content_type = models.ForeignKey(
         ContentType,
+        on_delete=models.CASCADE,
     )
 
     object_id = models.IntegerField()
@@ -378,12 +384,14 @@ class Occurrence(EventModelMixin):
         verbose_name=_('Created by'),
         related_name='occurrences',
         blank=True, null=True,
+        on_delete=models.SET_NULL,
     )
 
     event = models.ForeignKey(
         'Event',
         verbose_name=_('Event'),
         related_name='occurrences',
+        on_delete=models.CASCADE,
     )
 
     original_start = models.DateTimeField(
@@ -453,7 +461,6 @@ class Occurrence(EventModelMixin):
                 'month': self.start.month, 'day': self.start.day})
 
 
-@python_2_unicode_compatible
 class Rule(models.Model):
     """
     This defines the rule by which an event will recur.

@@ -17,7 +17,7 @@ on readthedocs.
 We added some basic bootstrap styles to start with. If you're not using
 Bootstrap we recommend to build your own styles, otherwise try::
 
-    {% load staticfiles %}
+    {% load static %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="{% static "calendarium/css/calendar.css" %}">
 
