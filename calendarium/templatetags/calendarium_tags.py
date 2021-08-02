@@ -1,5 +1,5 @@
 """Templatetags for the ``calendarium`` project."""
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django import template
 from django.utils.timezone import datetime, now, timedelta, utc
 
@@ -40,7 +40,7 @@ def render_upcoming_events(event_amount=5, category=None):
     }
 
 
-@register.assignment_tag
+@register.simple_tag
 def get_upcoming_events(amount=5, category=None):
     """Returns a list of upcoming events."""
     return _get_upcoming_events(amount=amount, category=category)

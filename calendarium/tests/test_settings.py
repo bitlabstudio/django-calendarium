@@ -61,6 +61,7 @@ TEMPLATES = [{
         'context_processors': (
             'django.contrib.auth.context_processors.auth',
             'django.template.context_processors.i18n',
+            'django.contrib.messages.context_processors.messages',
             'django.template.context_processors.request',
             'django.template.context_processors.media',
             'django.template.context_processors.static',
@@ -69,12 +70,9 @@ TEMPLATES = [{
 }]
 
 # Django 1.8 compatibility
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
 
-PASSWORD_HASHERS = (
-    'django.contrib.auth.hashers.MD5PasswordHasher',
-)

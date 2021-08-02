@@ -3,7 +3,7 @@ import calendar
 from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.decorators import permission_required
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.forms.models import model_to_dict
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator

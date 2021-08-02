@@ -19,7 +19,3 @@ DATABASES = {
         'NAME': 'db.sqlite',
     }
 }
-
-django_version = django.get_version()
-if StrictVersion(django_version) < StrictVersion('1.7'):
-    INSTALLED_APPS.append('south', )
