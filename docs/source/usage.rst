@@ -8,7 +8,7 @@ want to add the calendar for the current month first. Reverse with::
 
 Then use the different URLs to let the user navigate through months, weeks and
 days. The event management should be intuitive. Be sure to add ``Rule`` models,
-if you want to use occurences.
+if you want to use occurrences.
 
 Template Tags
 -------------

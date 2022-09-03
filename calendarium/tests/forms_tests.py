@@ -104,7 +104,7 @@ class OccurrenceFormTestCase(TestCase):
                 'When save is called, the occurrence\'s start time should be'
                 ' set forward one hour.'))
 
-        # Case 3: Altering everthing from occurrence 4 to 6 to one day later
+        # Case 3: Altering everything from occurrence 4 to 6 to one day later
         occ_to_use = self.rec_occurrence_list[4]
         data = model_to_dict(occ_to_use)
         initial = data.copy()
